@@ -29,6 +29,7 @@ class Body
 class Ship: public Body
 {
 public:
+	void init(coordinate initial_position, coordinate initial_speed);
 	
 	//Ship();
 	

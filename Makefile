@@ -1,4 +1,4 @@
-FLAGS = -std=c++11  -pthread
+FLAGS = -std=c++11  -pthread -lncurses
 
 run: main.cpp Ship.cpp
-	g++ $(FLAGS) main.cpp Ship.cpp Keyboard.cpp -o game
+	g++  -o game main.cpp Ship.cpp Keyboard.cpp Screen.cpp $(FLAGS)
