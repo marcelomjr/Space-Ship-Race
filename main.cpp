@@ -9,6 +9,7 @@ using namespace std;
 
 
 int main() {
+	
 	Ship ship;
 	coordinate speed = {.x =0, .y = 0, .z = 0};
 	coordinate position = {.x =0, .y = 0, .z = 0};
@@ -48,7 +49,7 @@ int main() {
 		
 		
 		ship.update(pos, speed);
-		screen->update(pos.x, pos.y);
+		screen->update(ship);
 		std::this_thread::sleep_for (std::chrono::milliseconds(50));
 	}
 	
