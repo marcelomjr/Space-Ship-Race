@@ -12,13 +12,14 @@ int main() {
 	
 	Ship ship;
 	coordinate speed = {.x =0, .y = 0, .z = 0};
-	coordinate position = {.x =0, .y = 0, .z = 0};
+	coordinate position = {.x =10, .y = 10, .z = 0};
+	std::vector<Body*> body_list {&ship};
 	
 	// Initialize the ship
 	ship.init(position, speed);
 	
 	Screen* screen = new Screen();
-	screen->init();
+	screen->init(&body_list);
 	
 	Keyboard* keyboard = new Keyboard();
   	keyboard->init();
@@ -32,7 +33,7 @@ int main() {
 		c = keyboard->get_last_pressed_key();
 		coordinate pos = ship.get_position();
 		
-		pos.y += 0.5;
+		//pos.y += 0.5;
 		if (c == 'q') break;
 		else if (c == 'a') {
 			pos.x -= 1;

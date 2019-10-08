@@ -8,9 +8,36 @@ void Body::update(coordinate position, coordinate speed) {
 
 		//cout << "Body: position:" << this->get_position().x << endl;
 }
+
 coordinate Body::get_position() {
 	return this->position;
 }
+
+std::vector<std::string> Body::get_model() {
+	return this->model;
+}
+
+std::vector<std::string> Body::get_delete_mask() {
+	
+	string blanks (this->model_width, ' ');
+	vector<string> mask(this->model_height, blanks);
+
+	return mask;
+}
+
+void Body::set_model(std::vector<std::string> new_model, double height, double width) {
+	this->model_height = height;
+	this->model_width = width;
+	this->model = new_model;
+}
+
+double Body::get_model_height() {
+	return this->model_height;
+}
+double Body::get_model_width() {
+	return this->model_width;
+}
+
 
 void Ship::init(coordinate initial_position, coordinate initial_speed) {
 	
@@ -22,23 +49,11 @@ void Ship::init(coordinate initial_position, coordinate initial_speed) {
 												"/^^\\",
 												"^^^^"};
 	
-	this->model = ship_model;
-	
-	
-	this->model_height = 6;
-	this->model_width = 5;
-	
-	 
+	this->set_model(ship_model, 6, 5);
 									
 	this->update(initial_position, initial_speed);
 }
 
-double Ship::get_model_height() {
-	return this->model_height;
-}
-double Ship::get_model_width() {
-	return this->model_width;
-}
-std::vector<std::string> Ship::get_model() {
-	return this->model;
-}
+
+
+
