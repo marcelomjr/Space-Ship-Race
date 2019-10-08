@@ -25,6 +25,7 @@ class Body
 		double model_width;
 		 
 	public:
+		void init(coordinate initial_position, coordinate initial_speed);
 		void update(coordinate position, coordinate speed);
 		coordinate get_position();
 		coordinate get_speed();
@@ -46,14 +47,14 @@ class Ship: public Body
 {
 public:
 	void init(coordinate initial_position, coordinate initial_speed);
+	Ship();
 	
+	~Ship();
 	
 private:
 	
 	
-	//Ship();
 	
-	//~Ship();
 	
 };
 

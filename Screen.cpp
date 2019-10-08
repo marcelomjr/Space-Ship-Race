@@ -14,7 +14,7 @@ void Screen::init(std::vector<Body*>* body_list) {
 	curs_set(0);           /* Do not display cursor */
 
 	this->max_x = 30;
-	this->max_y = 60;
+	this->max_y = 100;
 	this->body_list_pointer = body_list;
 
 	vector<char> row (this->max_y, ' ');
@@ -55,7 +55,8 @@ void Screen::apply_body_list(bool to_clean) {
 		for (int i = 0; i < model.size(); i++) {
 			string row = model[i];
 
-			coordinate pos = this->old_body_list[body].get_position();
+			coordinate real_pos = this->old_body_list[body].get_position();
+			coordinate pos = {.x = (this->max_x - real_pos.y), .y = ((this->max_y/2) +real_pos.x)};
 			
 			int x = pos.x + i;
 			if (x >= 0 && x < _max_x) {

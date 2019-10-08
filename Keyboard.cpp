@@ -19,7 +19,7 @@ void keyboard_handler(bool *is_reading, char* last_pressed_key) {
 			*last_pressed_key = 0;
 		}
 		
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	}
 }
 
@@ -35,8 +35,8 @@ void Keyboard::init() {
 	//keypad(stdscr, TRUE);	 	// We get F1, F2 etc..		
 	noecho();			         // Don't echo() while we do getch
 	curs_set(0);           		//Do not display cursor
-	nodelay(stdscr, TRUE);		// Do not wait until a key is hit
-	cbreak();						// each key the user hits is returned immediately by getch()
+	//nodelay(stdscr, TRUE);		// Do not wait until a key is hit
+	//cbreak();						// each key the user hits is returned immediately by getch()
 	
 	// Flag initialization
 	this->is_reading = true;

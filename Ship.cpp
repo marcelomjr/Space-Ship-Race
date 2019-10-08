@@ -39,8 +39,14 @@ double Body::get_model_width() {
 }
 
 
+void Body::init(coordinate initial_position, coordinate initial_speed) {
+	this->update(initial_position, initial_speed);
+}
+
 void Ship::init(coordinate initial_position, coordinate initial_speed) {
 	
+	Body::init(initial_position, initial_speed);
+
 	std::vector<std::string> ship_model {
 												" /\\",
 												"/__\\",
@@ -49,11 +55,14 @@ void Ship::init(coordinate initial_position, coordinate initial_speed) {
 												"/^^\\",
 												"^^^^"};
 	
-	this->set_model(ship_model, 6, 5);
-									
-	this->update(initial_position, initial_speed);
+	this->set_model(ship_model, 6, 5);									
+}
+Ship::Ship() {
+
 }
 
-
+Ship::~Ship() {
+	
+}
 
 
