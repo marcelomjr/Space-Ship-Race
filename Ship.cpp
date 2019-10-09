@@ -3,16 +3,27 @@
 
 
 void Body::update(coordinate position, coordinate speed) {
-		this->position = position;
-		this->speed = speed;
 
-		//cout << "Body: position:" << this->get_position().x << endl;
+	// Out of the boundaries
+	if (position.x > this->max_absolut_x) {
+		this->position.x = this->max_absolut_x;
+	} else if (position.x < -this->max_absolut_x) {
+		this->position.x = -this->max_absolut_x;
+	} else {
+		this->position = position;
+	}
+	this->speed = speed;
+
+	//cout << "Body: pos.x:" << this->get_position().x << endl;
 }
 
 coordinate Body::get_position() {
 	return this->position;
 }
 
+coordinate Body::get_speed() {
+	return this->speed;
+}
 std::vector<std::string> Body::get_model() {
 	return this->model;
 }
@@ -40,6 +51,10 @@ double Body::get_model_width() {
 
 
 void Body::init(coordinate initial_position, coordinate initial_speed) {
+
+	// Set the limits of x axis
+	this->max_absolut_x = 50;
+
 	this->update(initial_position, initial_speed);
 }
 
@@ -57,12 +72,40 @@ void Ship::init(coordinate initial_position, coordinate initial_speed) {
 	
 	this->set_model(ship_model, 6, 5);									
 }
-Ship::Ship() {
 
-}
 
-Ship::~Ship() {
+
+void Planet::init(coordinate initial_position, coordinate initial_speed, int type) {
 	
+	Body::init(initial_position, initial_speed);
+
+	if (type == 1) {
+		std::vector<std::string> ship_model {
+			"      o********o      ",
+			"   o**************o   ", 
+			"  o*****************o ",
+			" o*******************o", 
+			"o********************o", 
+			"o********************o",
+			" o*******************o", 
+			"  o*****************o ",
+			"   o**************o   ", 
+			"      o********o      "
+		};
+		
+		this->set_model(ship_model, 10, 22);
+	}
+	if (type == 2) {
+		std::vector<std::string> ship_model {
+			"   ooooooo   ",  
+			" o         o ",
+			"o           o",
+			"o           o",
+			"o           o",
+			" o         o ",
+			"   ooooooo   "
+		};
+
+		this->set_model(ship_model, 7, 13);
+	}
 }
-
-

@@ -1,9 +1,13 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <stdlib.h>  // rand
+#include <time.h> // to rand works
 #include "Ship.hpp"
 #include "Keyboard.hpp"
 #include "Screen.hpp"
+#include "Physics.hpp"
+
 
 using namespace std;
 
@@ -12,77 +16,85 @@ int main() {
 	
 	Ship ship;
 	coordinate speed = {.x =0, .y = 0, .z = 0};
-	coordinate position = {.x =10, .y = 10, .z = 0};
+	coordinate position = {.x =0, .y = 15, .z = 0};
 	
 	ship.init(position, speed);
 	std::vector<Body*> body_list {&ship};
 
 	
-	std::vector<Ship> planets(10);
+	position.x = -50;
+	position.y = 10;
 
-	for (int i = 0; i < planets.size(); i++)	{
-		position.x += 5;
-		planets[i].init(position, speed);
-		body_list.push_back(&planets[i]);
+	srand ( time(NULL) );
+
+	// Create the planets
+	int number_of_planets = 100;
+
+	std::vector<Planet> planets(number_of_planets);
 
 
-	}
+	for (int i = 0; i < number_of_planets; i++)	{
 
-
-/*
-
-	// Initialize the ship
-	std::vector<Ship> rocks;
-	
-	position.x = 0;
-	for (int i = 0; i < 5; i++)	{
-		body_list.push_back(new Body());
-	}
-
-	cout <<"oid"<< body_list.size()<<endl;
-	for (int i = 1; i < body_list.size(); i++) {
-		position.x += 5;
-		body_list[i]->init(position, speed);
-	}
-	while(1);
-
-	/*position.y = 5;position.x = 5; Ship s1; s1.init(position, speed); body_list.push_back(&s1);
-	position.y = 12;position.x = 11; Ship s2; s2.init(position, speed); body_list.push_back(&s2);
-	position.y = 24;position.x = 24; Ship s3; s3.init(position, speed); body_list.push_back(&s3);*/
+		if (position.x > 40) {
+			position.x = 0;
+		}
 		
+		position.x += double ((rand() % 11) + 15);
+		
+		position.y += double ((rand() % 21) + 10);
+
+		planets[i].init(position, speed, 2);
+
+		body_list.push_back(&planets[i]);
+		//cout << planets[i].get_position().x << " "<< planets[i].get_position().y << endl;
+	}
+	//while(1);
 
 	Screen* screen = new Screen();
 	screen->init(&body_list);
 	
 	Keyboard* keyboard = new Keyboard();
   	keyboard->init();
-	
+
+  	Physics* physics = new Physics();
+  	physics->init(&body_list);
 	
 	
 	bool running = true;
 	char c;
 	while (running) {		
-		
+		// get the pressed key
 		c = keyboard->get_last_pressed_key();
+
+		// get the current position and speed of the ship
 		coordinate pos = ship.get_position();
+		coordinate speed = ship.get_speed();
+	
 		
-		//pos.y += 0.5;
 		if (c == 'q') break;
+
 		else if (c == 'a') {
-			pos.x -= 1;
+			speed.x -= 1;
 		}
 		else if (c == 'd'){
-			pos.x += 1;
+			speed.x += 1;
 		}
 		else if (c == 'w') {
-			pos.y += 1;
+			speed.y += 1;
 		}
 		else if (c == 's') {
-			pos.y -= 1;
+			speed.y -= 1;
 		}
-		
-		
+
+		// update the ship speed
 		ship.update(pos, speed);
+
+		// update the physics speed and position
+		physics->update(0.1);
+		
+		
+		//cout << "speed" << body_list[0]->get_speed().x << "ship da main: " << ship.get_speed().x << endl;
+		//cout << "posicoes" << body_list[0]->get_position().x << "ship da main: " << ship.get_position().x << endl;
 		screen->update(ship);
 		std::this_thread::sleep_for (std::chrono::milliseconds(100));
 	}
