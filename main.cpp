@@ -36,7 +36,7 @@ int main() {
 	for (int i = 0; i < number_of_planets; i++)	{
 
 		if (position.x > 40) {
-			position.x = 0;
+			position.x = -50;
 		}
 		
 		position.x += double ((rand() % 11) + 15);
@@ -60,8 +60,11 @@ int main() {
   	physics->init(&body_list);
 	
 	
-	bool running = true;
+	bool running = true, won = false;
 	char c;
+
+	double last_planet_y = planets[number_of_planets - 1].get_position().y;
+
 	while (running) {		
 		// get the pressed key
 		c = keyboard->get_last_pressed_key();
@@ -74,16 +77,22 @@ int main() {
 		if (c == 'q') break;
 
 		else if (c == 'a') {
-			speed.x -= 1;
+			speed.x -= 5;
 		}
 		else if (c == 'd'){
-			speed.x += 1;
+			speed.x += 5;
 		}
 		else if (c == 'w') {
 			speed.y += 1;
 		}
 		else if (c == 's') {
 			speed.y -= 1;
+		}
+
+
+		if (pos.y > last_planet_y) {
+			won = true;
+			break;
 		}
 
 		// update the ship speed
@@ -101,8 +110,12 @@ int main() {
 	
 	keyboard->stop();
 	screen->stop();
-        
-	cout << "end program" << endl;
+    if (won){
+    	cout << "You Win!!!!" << endl;
+    } else {
+    	cout << "Game Over" << endl;
+    }
+	
 
 
 	return 0;

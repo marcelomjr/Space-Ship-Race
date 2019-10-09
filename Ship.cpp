@@ -12,7 +12,18 @@ void Body::update(coordinate position, coordinate speed) {
 	} else {
 		this->position = position;
 	}
-	this->speed = speed;
+
+	if (speed.x > this->max_absolut_x_speed) {
+		this->speed.x = this->max_absolut_x_speed;
+	}
+	else if (speed.x < -this->max_absolut_x_speed) {
+		this->speed.x = -this->max_absolut_x_speed;
+	}
+	else {
+		this->speed = speed;
+	}
+	this->position.y = position.y;
+	this->speed.y = speed.y;
 
 	//cout << "Body: pos.x:" << this->get_position().x << endl;
 }
@@ -54,6 +65,7 @@ void Body::init(coordinate initial_position, coordinate initial_speed) {
 
 	// Set the limits of x axis
 	this->max_absolut_x = 50;
+	this->max_absolut_x_speed = 20;
 
 	this->update(initial_position, initial_speed);
 }
