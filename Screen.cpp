@@ -17,6 +17,7 @@ void Screen::init(std::vector<Body*>* body_list) {
 	this->max_y = 100;
 
 	this->body_list_pointer = body_list;
+	this->log = "default";
 
 	// Update reference vector
 	for (int body = 0; body < (*(this->body_list_pointer)).size(); body++) {
@@ -55,7 +56,7 @@ void Screen::apply_body_list(bool to_clean, coordinate ship_pos) {
 		int _max_x = this->max_x;
 		int _max_y = this->max_y;
 
-		//Get the real position of each body in the map
+		//Get thmessage3e real position of each body in the map
 		coordinate real_pos = this->old_body_list[body].get_position();
 
 		double delta_x = real_pos.x - ship_pos.x;
@@ -121,11 +122,14 @@ void Screen::update(Ship ship) {
 
 	move(1,0);
 	addstr(status_speed.c_str());
+	
+	move(2,0);
+	addstr(this->log.c_str());
 
 
 	refresh();
-
-	
-	
 }
 
+void Screen::log_message(string message) {
+	this-> log = message;
+}

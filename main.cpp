@@ -16,7 +16,7 @@ int main() {
 	
 	Ship ship;
 	coordinate speed = {.x =0, .y = 0, .z = 0};
-	coordinate position = {.x =0, .y = 15, .z = 0};
+	coordinate position = {.x =0, .y = 0, .z = 0};
 	
 	ship.init(position, speed);
 	std::vector<Body*> body_list {&ship};
@@ -57,7 +57,7 @@ int main() {
   	keyboard->init();
 
   	Physics* physics = new Physics();
-  	physics->init(&body_list);
+  	physics->init(&body_list, screen);
 	
 	
 	bool running = true, won = false;
@@ -90,7 +90,7 @@ int main() {
 		}
 
 
-		if (pos.y > last_planet_y) {
+		if (pos.y > last_planet_y + 15) {
 			won = true;
 			break;
 		}
