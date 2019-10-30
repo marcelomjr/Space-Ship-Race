@@ -15,7 +15,7 @@ using namespace std;
 int main() {
 	
 	Ship ship;
-	coordinate speed = {.x =0, .y = 0, .z = 0};
+	coordinate speed = {.x =0, .y = 10, .z = 0};
 	coordinate position = {.x =0, .y = 0, .z = 0};
 	
 	ship.init(position, speed);
@@ -24,6 +24,10 @@ int main() {
 	
 	position.x = -50;
 	position.y = 10;
+	position.z = 0;
+	speed.x = 0;
+	speed.y = 0;
+	speed.z = 0;
 
 	srand ( time(NULL) );
 

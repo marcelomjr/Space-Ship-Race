@@ -12,9 +12,6 @@ S: Aumenta a velocidade para trás.
 A: Aumenta a velocidade para a esquerda.
 D: Aumenta a velocidade para a direita.
 
-Q: Sair do jogo.
-
-Observação: Não consegui resolver a questão das colisões, portanto a partida não
-se encerra quando a nave atinge um astro.
+Q: Sair do jogo (tecle qualquer tecla depois disso).
 
 Link do repositório: https://github.com/marcelomjr/Space-Ship-Race.git

@@ -124,7 +124,7 @@ void Screen::update(Ship ship) {
 	addstr(status_speed.c_str());
 	
 	move(2,0);
-	addstr(this->log.c_str());
+	//addstr(this->log.c_str());
 
 
 	refresh();
