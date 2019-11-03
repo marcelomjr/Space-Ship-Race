@@ -10,24 +10,50 @@ Sources:
 #include <errno.h> 		// errno
 #include <arpa/inet.h> 	// htons
 #include <netinet/in.h>
+#include <pthread.h> // pthread_create
+
 
 
 #define PORT 3001
 #define ADDRESS "127.0.0.1"
 #define BUFFER_SIZE 10
+#define MAX_CONNECTIONS 5
 
+int connections_fd[MAX_CONNECTIONS];
+bool free_connection[MAX_CONNECTIONS];
+bool is_running;
+int socket_fd;
+struct sockaddr_in my_address;
+socklen_t addrlen;
 
 using namespace std;
 
-void server_connection(int connection_fd) {
-	
-
+bool add_connection(int connection_fd) {
+	return false;
 }
-void server_setup() {
 
-	int socket_fd, connection_fd;
-	struct sockaddr_in my_address;
-	socklen_t addrlen = (socklen_t) sizeof(my_address);
+void* wait_connections(void* param) {
+
+	while (is_running) {
+
+		cout << "waiting connection" << endl;
+		// Waits for the next connection request in the queue of pending connections
+		int connection_fd = accept(socket_fd, (struct sockaddr *) &my_address, &addrlen);
+
+		if (connection_fd == -1) {
+			cout << "Accept failed! Error number:" << errno << endl;
+		} 
+		else if (!add_connection(connection_fd)) {
+			cout << "Error! Exceeded the number of connections!" << endl;
+		}
+	}
+}
+
+void run_server() {
+
+	pthread_t connection_creator_thread; 
+
+	addrlen = (socklen_t) sizeof(my_address);
 
 	// It creates a new socket
 	socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -68,16 +94,18 @@ void server_setup() {
 
 
 	}
-	cout << "I'm waiting for a connection" << endl;
-	/*
-	It extracts the first connection request on the queue of pending connections for the listening socket,
-	socket_fd, creates a new connected socket, and returns a new file descriptor referring to that socket.
-	*/
-	connection_fd = accept(socket_fd, (struct sockaddr *) &my_address, &addrlen);
-	if (connection_fd == -1) {
-		cout << "Accept failed! Error number:" << errno << endl;
-		return;
+	// It allows receiving connections
+	is_running = true;
+
+	// Creates a new thread for receiving new connections	
+	if (pthread_create(&connection_creator_thread, NULL, wait_connections, NULL) != 0) {
+		cout << "Error in connection_creator_thread creation" << endl;
 	}
+
+
+
+
+	
 
 	char buffer[BUFFER_SIZE]; 
 
@@ -85,7 +113,7 @@ void server_setup() {
 
 		// recv() is used to receive messages from a socket. 
 		
-		if (recv(connection_fd, &buffer, BUFFER_SIZE, 0) == -1) {
+		/*if ((int) recv(connection_fd, &buffer, BUFFER_SIZE, 0) == -1) {
 			cout << "recv failed! Error number:" << errno << endl;
 			return;
 		}
@@ -94,15 +122,17 @@ void server_setup() {
 		if (send(connection_fd, "const void *buf", BUFFER_SIZE, 0) == -1) {
 			cout << "send failed! Error number:" << errno << endl;
 			return;
-		}
+		}*/
 	}
+
+	pthread_join(connection_creator_thread, NULL);
 
 	return;
 }
 
 int main() {
 
-	server_setup();
+	run_server();
 
 	return 0;
 }
