@@ -5,6 +5,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <thread>
+#include "Keyboard.hpp"
+
+void send_command(char command) {
+	
+}
 
 int main() {
   int socket_fd;
@@ -21,21 +27,24 @@ int main() {
     printf("Problemas na conexao\n");
     return 0;
   }
-  printf("Conectei ao servidor\n");
+	printf("Conectei ao servidor\n");
+  
+	Keyboard* keyboard = new Keyboard();
+	//keyboard->init();
 
-  char buffer[10];
+  char command[1];
+  
   while(1) {
-    /* Agora, meu socket funciona como um descritor de arquivo usual */
-    scanf("%s", buffer);
-    send(socket_fd, buffer, 10, 0);
-    printf("Escrevi mensagem de ping!\n");
-    sleep(1);
-
-    /* Recebendo resposta */
-    char reply[10];
-    recv(socket_fd, reply, 10, 0);
-    printf("Resposta:\n%s\n", reply);
+    printf("estou aqui1\n");
+		command[0] = keyboard->get_last_pressed_key();
+    
+		 printf("Error!%d\n", (int) send(socket_fd, command, 10, MSG_NOSIGNAL));
+	 
+    //printf("%c\n", command[0]);
+    
   }
+  
   close(socket_fd);
+  keyboard->stop();
   return 0;
 }

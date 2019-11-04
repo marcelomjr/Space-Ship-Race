@@ -29,7 +29,7 @@ Keyboard::Keyboard() {}
 
 Keyboard::~Keyboard() {}
 
-void Keyboard::init() {
+void Keyboard::init(void* callback_keyboard) {
 	
 	raw();				         // Line buffering disabled
 	//keypad(stdscr, TRUE);	 	// We get F1, F2 etc..		
@@ -41,7 +41,7 @@ void Keyboard::init() {
 	// Flag initialization
 	this->is_reading = true;
 	// std::thread name() Accepts as parameters 1. callable function 2. args list
-	std::thread keyboard_thread(keyboard_handler, &this->is_reading, &this->last_pressed_key);
+	std::thread keyboard_thread(keyboard_handler, &this->is_reading, &this->last_pressed_key, &callback_keyboard);
 
 	// Save the thread reference before return from this function
 	(this->kb_thread).swap(keyboard_thread);
@@ -57,6 +57,8 @@ void Keyboard::stop() {
 }
 
 char Keyboard::get_last_pressed_key() {
+	while(this->last_pressed_key == 0);
+	
   char key = this->last_pressed_key;
   this->last_pressed_key = 0;
   return key;

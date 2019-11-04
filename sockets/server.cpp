@@ -13,10 +13,11 @@ Sources:
 #include <pthread.h> // pthread_create
 #include <unistd.h> // closes
 
+#include "server.hpp"
 
 #define PORT 3001
 #define ADDRESS "127.0.0.1"
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 1
 #define MAX_CONNECTIONS 3
 
 int connections_fd[MAX_CONNECTIONS];
@@ -58,7 +59,7 @@ void* wait_connections(void* param) {
 
 	while (is_running) {
 
-		cout << "waiting connection" << endl;
+		//cout << "waiting connection" << endl;
 		// Waits for the next connection request in the queue of pending connections
 		int connection_fd = accept(socket_fd, (struct sockaddr *) &my_address, &addrlen);
 
@@ -71,8 +72,25 @@ void* wait_connections(void* param) {
 	}
 }
 
-void run_server() {
+void* update_model_clients(void* param) {
+	while(is_running) {
+		// Pass for all connections checking if they sent something.
+		for (int connection = 0; connection < MAX_CONNECTIONS; connection++) {
+			// Check only if there is an active connection in this position
+			if (!free_connection[connection]) {
+	
+				if (send(connections_fd[connection], "const void *buf", BUFFER_SIZE, MSG_NOSIGNAL) == -1) {
+					cout << "Client " << connection << ": " << "send failed! Error number:" << errno << endl;
+					remove_connection(connection);
+				}
+			}
+		}
+	}
+}
 
+void run_server(void* params) {
+
+	Input_Interface* interface = (Input_Interface*) params;
 	pthread_t connection_creator_thread;
 	char in_buffer[BUFFER_SIZE]; 
 	int msglen;
@@ -130,10 +148,9 @@ void run_server() {
 		cout << "Error in connection_creator_thread creation" << endl;
 	}
 	
-	//TODO: testar e entender donwait e nosignal>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	while(is_running) {
-		// Pass for all connections verifying if they sent something.
+		// Pass for all connections checking if they sent something.
 		for (int connection = 0; connection < MAX_CONNECTIONS; connection++) {
 			// Check only if there is an active connection in this position
 			if (!free_connection[connection]) {
@@ -141,27 +158,20 @@ void run_server() {
 				// recv() is used to receive messages from a socket. 
 				// Don't wait until receive a menssage
 				msglen = recv(connections_fd[connection], &in_buffer, BUFFER_SIZE, MSG_DONTWAIT);
-				if (msglen == -1) {
-					cout << "recv failed! Error number:" << errno << endl;
-				}
-				if (msglen > 0) {
-					cout << "Client " << connection << ": "<< in_buffer  << endl;
-				}
-
-
-				if (send(connections_fd[connection], "const void *buf", BUFFER_SIZE, MSG_NOSIGNAL) == -1) {
-					cout << "send failed! Error number:" << errno << endl;
+		
+				// recv change errno to EAGAIN when no message is received.
+				if (msglen == -1 && errno != EAGAIN) {
+					cout << "Client " << connection << ": " << "recv failed! errno:" << errno << endl;
 					remove_connection(connection);
 				}
-			}
-			int i = 0;
-			while (i < 5) {
-				sleep(1);
-				cout << i++ << endl;
+				
+				else if (msglen > 0) {
+					//cout << "Client " << connection << ": "<< in_buffer  << endl;
+					interface->key = in_buffer[0];
+					interface->was_read = false;
+				}
 			}
 		}
-
-		
 	}
 
 	// Remove all connections before end the program
@@ -172,12 +182,5 @@ void run_server() {
 	pthread_join(connection_creator_thread, NULL);
 
 	return;
-}
-
-int main() {
-
-	run_server();
-
-	return 0;
 }
 

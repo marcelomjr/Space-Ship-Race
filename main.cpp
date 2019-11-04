@@ -7,7 +7,7 @@
 #include "Keyboard.hpp"
 #include "Screen.hpp"
 #include "Physics.hpp"
-
+#include "sockets/server.hpp"
 
 using namespace std;
 
@@ -20,6 +20,8 @@ int main() {
 	
 	ship.init(position, speed);
 	std::vector<Body*> body_list {&ship};
+	
+	Input_Interface input_interface;
 
 	
 	position.x = -50;
@@ -63,6 +65,8 @@ int main() {
   	Physics* physics = new Physics();
   	physics->init(&body_list, screen);
 	
+	// Start the server
+	std::thread server_thread(run_server, &input_interface);
 	
 	bool running = true, won = false;
 	char c;
@@ -71,29 +75,39 @@ int main() {
 
 	while (running) {		
 		// get the pressed key
-		c = keyboard->get_last_pressed_key();
+		if (!input_interface.was_read) {
+			
+			// To avoid read twice the same command
+			input_interface.was_read = true;
+			
+			// Use the new command
+			switch (input_interface.key) {
+				case 'q':
+					running = false;
+					break;
+				
+				case 'a':
+					speed.x -= 5;
+					break;
+					
+				case 'd':
+					speed.x += 5;
+					break;
+				
+				case 'w':
+					speed.y += 1;
+					break;
+				
+				case 's':
+					speed.y -= 1;
+					break;
+			}
+		}
 
 		// get the current position and speed of the ship
 		coordinate pos = ship.get_position();
 		coordinate speed = ship.get_speed();
 	
-		
-		if (c == 'q') break;
-
-		else if (c == 'a') {
-			speed.x -= 5;
-		}
-		else if (c == 'd'){
-			speed.x += 5;
-		}
-		else if (c == 'w') {
-			speed.y += 1;
-		}
-		else if (c == 's') {
-			speed.y -= 1;
-		}
-
-
 		if (pos.y > last_planet_y + 15) {
 			won = true;
 			break;
