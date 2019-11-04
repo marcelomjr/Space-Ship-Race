@@ -11,13 +11,13 @@ Sources:
 #include <arpa/inet.h> 	// htons
 #include <netinet/in.h>
 #include <pthread.h> // pthread_create
-
+#include <unistd.h> // closes
 
 
 #define PORT 3001
 #define ADDRESS "127.0.0.1"
 #define BUFFER_SIZE 10
-#define MAX_CONNECTIONS 5
+#define MAX_CONNECTIONS 3
 
 int connections_fd[MAX_CONNECTIONS];
 bool free_connection[MAX_CONNECTIONS];
@@ -28,10 +28,32 @@ socklen_t addrlen;
 
 using namespace std;
 
+/*
+	Find a free connection position and put the new connection
+	Return true if found it or false if all the positions are busy.
+*/
 bool add_connection(int connection_fd) {
+
+	for (int i = 0; i < MAX_CONNECTIONS; i++) {
+		if (free_connection[i]) {
+			free_connection[i] = false;
+			connections_fd[i] = connection_fd;
+			return true;
+		}
+	}
 	return false;
 }
 
+void remove_connection(int position) {
+	// Check if there is really an active connection in this position
+	if (!free_connection[position]) {
+		free_connection[position] = true;
+		close(connections_fd[position]);
+		cout << "Connection " << position << "was removed" << endl;
+	}
+}
+
+// Run a loop waiting for new connections
 void* wait_connections(void* param) {
 
 	while (is_running) {
@@ -51,9 +73,15 @@ void* wait_connections(void* param) {
 
 void run_server() {
 
-	pthread_t connection_creator_thread; 
+	pthread_t connection_creator_thread;
+	char in_buffer[BUFFER_SIZE]; 
+	int msglen;
 
 	addrlen = (socklen_t) sizeof(my_address);
+
+	for (int i = 0; i < MAX_CONNECTIONS; i++) {
+		free_connection[i] = true;
+	}
 
 	// It creates a new socket
 	socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -101,28 +129,44 @@ void run_server() {
 	if (pthread_create(&connection_creator_thread, NULL, wait_connections, NULL) != 0) {
 		cout << "Error in connection_creator_thread creation" << endl;
 	}
-
-
-
-
 	
+	//TODO: testar e entender donwait e nosignal>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-	char buffer[BUFFER_SIZE]; 
+	while(is_running) {
+		// Pass for all connections verifying if they sent something.
+		for (int connection = 0; connection < MAX_CONNECTIONS; connection++) {
+			// Check only if there is an active connection in this position
+			if (!free_connection[connection]) {
 
-	while(1) {
+				// recv() is used to receive messages from a socket. 
+				// Don't wait until receive a menssage
+				msglen = recv(connections_fd[connection], &in_buffer, BUFFER_SIZE, MSG_DONTWAIT);
+				if (msglen == -1) {
+					cout << "recv failed! Error number:" << errno << endl;
+				}
+				if (msglen > 0) {
+					cout << "Client " << connection << ": "<< in_buffer  << endl;
+				}
 
-		// recv() is used to receive messages from a socket. 
-		
-		/*if ((int) recv(connection_fd, &buffer, BUFFER_SIZE, 0) == -1) {
-			cout << "recv failed! Error number:" << errno << endl;
-			return;
+
+				if (send(connections_fd[connection], "const void *buf", BUFFER_SIZE, MSG_NOSIGNAL) == -1) {
+					cout << "send failed! Error number:" << errno << endl;
+					remove_connection(connection);
+				}
+			}
+			int i = 0;
+			while (i < 5) {
+				sleep(1);
+				cout << i++ << endl;
+			}
 		}
 
-		cout << buffer  << endl;
-		if (send(connection_fd, "const void *buf", BUFFER_SIZE, 0) == -1) {
-			cout << "send failed! Error number:" << errno << endl;
-			return;
-		}*/
+		
+	}
+
+	// Remove all connections before end the program
+	for (int pos = 0; pos < MAX_CONNECTIONS; pos++) {
+		remove_connection(pos);
 	}
 
 	pthread_join(connection_creator_thread, NULL);

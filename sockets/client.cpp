@@ -23,9 +23,11 @@ int main() {
   }
   printf("Conectei ao servidor\n");
 
+  char buffer[10];
   while(1) {
     /* Agora, meu socket funciona como um descritor de arquivo usual */
-    send(socket_fd, "PING", 10, 0);
+    scanf("%s", buffer);
+    send(socket_fd, buffer, 10, 0);
     printf("Escrevi mensagem de ping!\n");
     sleep(1);
 
