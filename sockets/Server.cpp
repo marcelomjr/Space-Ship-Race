@@ -10,10 +10,10 @@ Sources:
 #include <errno.h> 		// errno
 #include <arpa/inet.h> 	// htons
 #include <netinet/in.h>
-#include <pthread.h> // pthread_create
+#include <thread> 
 #include <unistd.h> // closes
 
-#include "server.hpp"
+#include "Server.hpp"
 
 #define PORT 3001
 #define ADDRESS "127.0.0.1"
@@ -26,6 +26,7 @@ bool is_running;
 int socket_fd;
 struct sockaddr_in my_address;
 socklen_t addrlen;
+bool server_is_closed = false;
 
 using namespace std;
 
@@ -50,18 +51,20 @@ void remove_connection(int position) {
 	if (!free_connection[position]) {
 		free_connection[position] = true;
 		close(connections_fd[position]);
-		cout << "Connection " << position << "was removed" << endl;
+		//cout << "Connection " << position << "was removed" << endl;
 	}
 }
 
 // Run a loop waiting for new connections
-void* wait_connections(void* param) {
+void wait_connections() {
 
 	while (is_running) {
 
 		//cout << "waiting connection" << endl;
 		// Waits for the next connection request in the queue of pending connections
 		int connection_fd = accept(socket_fd, (struct sockaddr *) &my_address, &addrlen);
+		//cout << "after connection" << endl;
+
 
 		if (connection_fd == -1) {
 			cout << "Accept failed! Error number:" << errno << endl;
@@ -69,7 +72,9 @@ void* wait_connections(void* param) {
 		else if (!add_connection(connection_fd)) {
 			cout << "Error! Exceeded the number of connections!" << endl;
 		}
+		
 	}
+	cout << "End wait_connections" << endl;
 }
 
 void* update_model_clients(void* param) {
@@ -88,12 +93,7 @@ void* update_model_clients(void* param) {
 	}
 }
 
-void run_server(void* params) {
-
-	Input_Interface* interface = (Input_Interface*) params;
-	pthread_t connection_creator_thread;
-	char in_buffer[BUFFER_SIZE]; 
-	int msglen;
+void server_init() {
 
 	addrlen = (socklen_t) sizeof(my_address);
 
@@ -123,12 +123,18 @@ void run_server(void* params) {
 	form (in network byte order) and stores it in the structure that inp points to */
 	inet_aton(ADDRESS, &(my_address.sin_addr));
 
-
+	bool is_bonded = false;
 	// It binds the socket to the address and port number
-	if (bind(socket_fd, (struct sockaddr *) &my_address, sizeof(sockaddr_in)) == -1 ) {
-		cout << "Bind failed" << endl;
-		cout << "Error number:" << errno << endl;
-		return;
+	while (!is_bonded) {
+		if (bind(socket_fd, (struct sockaddr *) &my_address, sizeof(sockaddr_in)) == -1 ) {
+			cout << "Bind failed! [errno: " << errno;
+			cout << "]. Wait while we try again." << endl;
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		}
+		else {
+			is_bonded = true;
+			cout << "Bonded with success!" << endl;
+		}
 	}
 
 	/* listen() marks the socket referred to by socket_fd as a passive socket, 
@@ -137,16 +143,26 @@ void run_server(void* params) {
 		cout << "Listen failed" << endl;
 		cout << "Error number:" << errno << endl;
 		return;
-
-
 	}
+
+}
+
+void run_server(void* params) {
+
+	Input_Interface* interface = (Input_Interface*) params;
+
+	char in_buffer[BUFFER_SIZE]; 
+	int msglen;
+
 	// It allows receiving connections
 	is_running = true;
 
-	// Creates a new thread for receiving new connections	
-	if (pthread_create(&connection_creator_thread, NULL, wait_connections, NULL) != 0) {
+	// Creates a new thread for receiving new connections
+	std::thread connection_creator_thread (wait_connections);
+
+	/*if ( != 0) {
 		cout << "Error in connection_creator_thread creation" << endl;
-	}
+	}*/
 	
 
 	while(is_running) {
@@ -179,8 +195,24 @@ void run_server(void* params) {
 		remove_connection(pos);
 	}
 
-	pthread_join(connection_creator_thread, NULL);
+	cout << "I'll wait for the thread end" << endl;
+	
+	connection_creator_thread.join();
+	cout << "thread ended" << endl;
+
+	server_is_closed = true;
 
 	return;
+}
+
+void stop_server() {
+	close(socket_fd);
+	is_running = false;
+	
+
+	while(!server_is_closed);
+	cout << "enddd" << endl;
+
+	
 }
 

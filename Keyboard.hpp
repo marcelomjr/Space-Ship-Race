@@ -1,20 +1,25 @@
 #ifndef KEYBOARD_HPP
 #define KEYBOARD_HPP
 
-void keyboard_handler(bool *is_reading, char* last_pressed_key);
+
+#include <thread>
+#include "sockets/Client.hpp"
 
 class Keyboard
 {
 	private:
 		std::thread kb_thread;
-		bool is_reading;
-		char last_pressed_key;
+		bool* is_reading;
+		char* last_pressed_key;
+		void keyboard_loop();
+		Client* myself;
 		
 
 	public:
-		void init();
+		void init(Client* client, bool* is_running, char* command);
+		void start();
 		void stop();
-		char get_last_pressed_key();
+		void send_command(char command);
 		Keyboard();
 		~Keyboard();
 	

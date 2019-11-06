@@ -4,10 +4,9 @@
 #include <stdlib.h>  // rand
 #include <time.h> // to rand works
 #include "Ship.hpp"
-#include "Keyboard.hpp"
 #include "Screen.hpp"
 #include "Physics.hpp"
-#include "sockets/server.hpp"
+#include "sockets/Server.hpp"
 
 using namespace std;
 
@@ -54,26 +53,30 @@ int main() {
 		body_list.push_back(&planets[i]);
 		//cout << planets[i].get_position().x << " "<< planets[i].get_position().y << endl;
 	}
-	//while(1);
+
+	// Start the server
+	server_init();
+	std::thread server_thread(run_server, &input_interface);
 
 	Screen* screen = new Screen();
 	screen->init(&body_list);
-	
-	Keyboard* keyboard = new Keyboard();
-  	keyboard->init();
 
   	Physics* physics = new Physics();
   	physics->init(&body_list, screen);
 	
-	// Start the server
-	std::thread server_thread(run_server, &input_interface);
+
 	
 	bool running = true, won = false;
 	char c;
 
 	double last_planet_y = planets[number_of_planets - 1].get_position().y;
 
-	while (running) {		
+	while (running) {
+
+		// get the current position and speed of the ship
+		coordinate pos = ship.get_position();
+		coordinate speed = ship.get_speed();		
+
 		// get the pressed key
 		if (!input_interface.was_read) {
 			
@@ -84,6 +87,7 @@ int main() {
 			switch (input_interface.key) {
 				case 'q':
 					running = false;
+
 					break;
 				
 				case 'a':
@@ -103,10 +107,8 @@ int main() {
 					break;
 			}
 		}
-
-		// get the current position and speed of the ship
-		coordinate pos = ship.get_position();
-		coordinate speed = ship.get_speed();
+		// Increasing difficulty
+		speed.y += 0.01;
 	
 		if (pos.y > last_planet_y + 15) {
 			won = true;
@@ -125,16 +127,18 @@ int main() {
 		screen->update(ship);
 		std::this_thread::sleep_for (std::chrono::milliseconds(100));
 	}
+
 	
-	keyboard->stop();
 	screen->stop();
+	
+
     if (won){
     	cout << "You Win!!!!" << endl;
     } else {
     	cout << "Game Over" << endl;
     }
-	
 
+    stop_server();
 
 	return 0;
 }

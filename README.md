@@ -5,13 +5,11 @@ colidir com obstáculos.
 
 Instruções:
 
-Execute o comando "make" para executar e "./game" para jogar.
-Comandos:
-W: Aumenta a velocidade para frente.
-S: Aumenta a velocidade para trás.
-A: Aumenta a velocidade para a esquerda.
-D: Aumenta a velocidade para a direita.
+1. Execute o comando "make" para compilar o projeto.
+2. Execute o comando "./server" para rodar o servidor rodando o jogo.
+3. Execute o comando ".game" para rodar o programa que controla o jogo.
 
-Q: Sair do jogo (tecle qualquer tecla depois disso).
+Obs: É necessário seguir essa ordem de excução para funcionamento correto do 
+programa.
 
 Link do repositório: https://github.com/marcelomjr/Space-Ship-Race.git

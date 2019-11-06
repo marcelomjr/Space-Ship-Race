@@ -7,5 +7,6 @@ struct {
 } typedef Input_Interface;
 
 void run_server(void* params);
-
+void stop_server();
+void server_init();
 #endif
