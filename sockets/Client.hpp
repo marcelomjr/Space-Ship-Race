@@ -4,10 +4,10 @@
 class Client {
 
 private:
-	bool (*command_interface)(char);
+	bool* is_running;
 	
 public:
-	void init();
+	void init(bool* is_running);
 	void stop();
 	void send_char(char character);
 	void update_client();

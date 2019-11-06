@@ -15,11 +15,12 @@ struct sockaddr_in target;
 
 using namespace std;
 
-void Client::init() {
+void Client::init(bool* is_running) {
 
+  this->is_running = is_running;
   
   socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-  printf("Socket created\n");
+  //printf("Socket created\n");
 
   target.sin_family = AF_INET;
   target.sin_port = htons(3001);
@@ -30,8 +31,6 @@ void Client::init() {
     return;
   }
   std::this_thread::sleep_for (std::chrono::milliseconds(1000));
-
-	cout << "Connected to the server\n";
 }
 
 void Client::send_char(char character) {
@@ -42,7 +41,9 @@ void Client::send_char(char character) {
     int status = send(socket_fd, buf, 1, MSG_NOSIGNAL);
 
     if (status == -1) {
+      *(this->is_running) = false;
       cout << "Error in client" << errno << endl;
+
     }
 }
 

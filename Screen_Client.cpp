@@ -26,6 +26,12 @@ void Screen::stop() {
 }
 
 void Screen::update(char command) {
+
+	for (int i= 0 ; i < 10; i++) {
+		move(i, 0);
+		addstr("                                       ");
+
+	}
 	
 	move(0,0); addstr("Comandos:");
 	move(2,0); addstr("w: Aumenta velocidade");

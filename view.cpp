@@ -37,8 +37,7 @@ int main () {
 	is_running = true;
 	
 	char server_reply;
-	cout << "client init" << endl;
-	myself.init();
+	myself.init(&is_running);
 
 	run_view(&myself);
 	myself.stop();
