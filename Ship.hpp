@@ -21,8 +21,6 @@ class Body
 		coordinate position;
 		coordinate speed;
 		std::vector<std::string> model;
-		double max_absolut_x;
-		double max_absolut_x_speed;
 		double model_height;
 		double model_width;
 		 
