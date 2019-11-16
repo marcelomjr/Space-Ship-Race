@@ -71,6 +71,15 @@ int main() {
 
 	double last_planet_y = planets[number_of_planets - 1].get_position().y;
 
+
+
+	// loop 
+	/*
+	pega versão atualizada do model
+	update dos controllers
+	atualiza tela
+	*/
+
 	while (running) {
 
 		// get the current position and speed of the ship

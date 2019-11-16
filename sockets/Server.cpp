@@ -25,8 +25,8 @@ bool free_connection[MAX_CONNECTIONS];
 bool is_running;
 int socket_fd;
 struct sockaddr_in my_address;
-socklen_t addrlen;
-bool server_is_closed = false;
+
+std::thread connection_creator_thread;
 
 using namespace std;
 
@@ -57,6 +57,9 @@ void remove_connection(int position) {
 
 // Run a loop waiting for new connections
 void wait_connections() {
+
+	 // size of my_address
+	socklen_t addrlen = (socklen_t) sizeof(my_address);
 
 	while (is_running) {
 
@@ -94,8 +97,6 @@ void* update_model_clients(void* param) {
 }
 
 void server_init() {
-
-	addrlen = (socklen_t) sizeof(my_address);
 
 	for (int i = 0; i < MAX_CONNECTIONS; i++) {
 		free_connection[i] = true;
@@ -158,7 +159,10 @@ void run_server(void* params) {
 	is_running = true;
 
 	// Creates a new thread for receiving new connections
-	std::thread connection_creator_thread (wait_connections);
+	std::thread connection_creator (wait_connections);
+
+	// Save the thread reference before return from this function
+	connection_creator_thread.swap(connection_creator);
 
 	/*if ( != 0) {
 		cout << "Error in connection_creator_thread creation" << endl;
@@ -190,6 +194,12 @@ void run_server(void* params) {
 		}
 	}
 
+	
+	return;
+}
+
+void stop_server() {
+
 	// Remove all connections before end the program
 	for (int pos = 0; pos < MAX_CONNECTIONS; pos++) {
 		remove_connection(pos);
@@ -197,22 +207,12 @@ void run_server(void* params) {
 
 	cout << "I'll wait for the thread end" << endl;
 	
+	// Waits for both threads
 	connection_creator_thread.join();
 	cout << "thread ended" << endl;
 
-	server_is_closed = true;
 
-	return;
-}
-
-void stop_server() {
 	close(socket_fd);
-	is_running = false;
-	
-
-	while(!server_is_closed);
-	cout << "enddd" << endl;
-
-	
+	is_running = false;	
 }
 

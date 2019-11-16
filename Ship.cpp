@@ -4,26 +4,9 @@
 
 void Body::update(coordinate position, coordinate speed) {
 
-	// Out of the boundaries
-	if (position.x > this->max_absolut_x) {
-		this->position.x = this->max_absolut_x;
-	} else if (position.x < -this->max_absolut_x) {
-		this->position.x = -this->max_absolut_x;
-	} else {
-		this->position = position;
-	}
+	this->position = position;
 
-	if (speed.x > this->max_absolut_x_speed) {
-		this->speed.x = this->max_absolut_x_speed;
-	}
-	else if (speed.x < -this->max_absolut_x_speed) {
-		this->speed.x = -this->max_absolut_x_speed;
-	}
-	else {
-		this->speed = speed;
-	}
-	this->position.y = position.y;
-	this->speed.y = speed.y;
+	this->speed = speed;
 
 	//cout << "Body: pos.x:" << this->get_position().x << endl;
 }
@@ -62,10 +45,6 @@ double Body::get_model_width() {
 
 
 void Body::init(coordinate initial_position, coordinate initial_speed) {
-
-	// Set the limits of x axis
-	this->max_absolut_x = 50;
-	this->max_absolut_x_speed = 20;
 
 	this->update(initial_position, initial_speed);
 }
