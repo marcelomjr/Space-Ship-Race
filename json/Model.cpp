@@ -13,6 +13,18 @@ void Model::add_player(Player player) {
 }
 
 void Model::remove_player(string player_id) {
+	bool found = false;
+
+	for (int i = 0; i < this->players_data.size() && !found; i++) {
+		if (this->players_data[i].player_id == player_id) {
+
+			found = true;
+
+			// remove the found player
+			this->players_data.erase(this->players_data.begin() + i);
+
+		}
+	}
 
 }
 
@@ -79,13 +91,8 @@ string Model::serialize_model(string player_id) {
 	// Add the planets array to the main JSON
 	j["map"] = j_planets;
 
-
-	cout << j << endl << endl;
-
-	cout << j["players"][0] << endl;
-
-	return "";
-
+	// Converts the JSON to string and returns
+	return j.dump();
 }
 
 void Model::player_to_json( Player player, json& j_player) {
