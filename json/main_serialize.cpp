@@ -22,8 +22,27 @@ int main() {
 
   cout << "_____________________" << endl;
 
+
+  // create vector of players
+  /*
+  string d;
+  for (int i = 0; i < 10; i++) {
+    Player player = {to_string(i), "rocket", {1,2, 3}, {3,2,1}};
+
+    this->players_data.push_back(player);
+  }
+  // create planets
+  for (int i = 0; i < 5; i++) {
+    Planet new_planet = {"type" + to_string(i), {3,2,1}, 4};
+    this->game_map.push_back(new_planet);
+  }
+
+  cout << "players: [" << this->players_data[1].player_id << "]" << endl;
+*/
   Model model;
-  model.serialize_model("01");
+  Player p;
+  model.add_player(p);
+  model.serialize_model("1");
 
   return 0;
 }

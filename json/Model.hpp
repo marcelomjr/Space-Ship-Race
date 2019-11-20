@@ -27,12 +27,21 @@ private:
 	//map current_map;
 	vector<Player> players_data;
 	vector<Planet> game_map;
+
+	// Private functions
+	void player_to_json( Player player, json& j_player);
+
+	void planet_to_json(Planet planet, json& j_planet);
 	
 public:
-	//void add_new_player(ns2::user_data data);
-	string serialize_model(string player_id); 
-	void player_data_to_json(json& j, Player player);
-	void mapa_to_json(json& j, Planet planet);
+	
+	void add_planet(Planet planet);
+		
+	void add_player(Player player);
+
+	void remove_player(string player_id);
+
+	string serialize_model(string player_id);
 };
 
 #endif
