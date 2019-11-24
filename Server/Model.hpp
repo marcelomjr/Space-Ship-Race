@@ -1,7 +1,7 @@
 #ifndef MODEL_HPP
 #define MODEL_HPP
 
-#include "json.hpp"
+#include "../json.hpp"
 
 using namespace std;
 
