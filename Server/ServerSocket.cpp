@@ -6,6 +6,7 @@ Sources:
 */
 
 #include "ServerSocket.hpp"
+#include <stdio.h>
 
 
 /*
@@ -18,7 +19,10 @@ bool ServerSocket::add_connection(int connection_fd) {
 		if (this->is_free_connection[i]) {
 			this->is_free_connection[i] = false;
 			this->connections_fd[i] = connection_fd;
-			for (int i = 0; i < MAX_CONNECTIONS; i++)cout << "[" << this->is_free_connection[i] << "] ";cout << endl;
+
+			// Add this player in the model
+			this->system_control->new_player_connected(i);
+
 			return true;
 		}
 	}
@@ -31,6 +35,10 @@ void ServerSocket::remove_connection(int position) {
 	if (!this->is_free_connection[position]) {
 		this->is_free_connection[position] = true;
 		close(this->connections_fd[position]);
+
+		// Remove this player from the model
+		this->system_control->player_desconnected(position);
+
 		//cout << "Connection " << position << "was removed" << endl;
 	}
 }
@@ -66,6 +74,7 @@ void ServerSocket::init(System_Control_Interface* system_control, Input_Handler_
 	// Set the interfaces
 	this->system_control = system_control;
 	this->input_handler = input_handler;
+	this->output_buffer_size = 500;
 
 
 	// Set all the connection positions as free
@@ -165,11 +174,24 @@ void ServerSocket::server_loop() {
 						3) 0 if the connection is closed
 				*/
 				msglen = recv(this->connections_fd[connection], &in_buffer, BUFFER_SIZE, MSG_DONTWAIT);
+
 				//TODO: REMOVE
-				cout << "message lenght: " << msglen << "errno: " << errno << endl;
-		
-		
-				// recv change errno to EAGAIN when no message is received.
+				//<<<<<<<<<<<<<<<<<<<<<<<<<<<
+				cout << "Received: message lenght: " << msglen << "|\terrno: " << errno << endl;
+
+				//TODO: Remove this
+				for (int i = 0; i < MAX_CONNECTIONS; i++) {
+					cout << "[" << this->is_free_connection[i] << "] ";
+				}
+
+				cout << endl << endl;
+				//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+				
+
+				/*	recv change errno to EAGAIN when no message is received, and it is ok, 
+					but if errno != EAGAIN, there is actual problem.
+				*/
 				if (msglen == -1 && errno != EAGAIN) {
 					cout << "Client " << connection << ": " << "recv failed! errno:" << errno << endl;
 					remove_connection(connection);
@@ -180,14 +202,41 @@ void ServerSocket::server_loop() {
 					this->input_handler->receiving_handler(in_buffer);
 				}
 
-				//TODO: Remove this
-				for (int i = 0; i < MAX_CONNECTIONS; i++) {
-					cout << "[" << this->is_free_connection[i] << "] ";
+				/*
+				it sends the updated model to player.
+				*/
+
+				// Get the updated model
+				string output_buffer = this->system_control->get_the_updated_model(connection);
+
+				// Get the buffer size (JSON + '\0')
+				int buffer_size = output_buffer.length()+1;
+
+				// It Converts the std::string to a c string
+				char * output_buffer_c = new char [buffer_size];
+  				std::strcpy (output_buffer_c, output_buffer.c_str());
+
+  				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+				
+				cout << "Sent buffer size: " << buffer_size << endl;
+//				printf("(%s)\n", output_buffer_c);
+				//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+				if (buffer_size > 0) {
+
+					// send return the number of sent characteres or -1 in case of error
+					int status = send(this->connections_fd[connection], output_buffer_c, buffer_size, MSG_NOSIGNAL);
+
+   						if (status == -1) {
+      						cout << "Client " << connection << ": " << "send failed! errno:" << errno << endl;
+							remove_connection(connection);
+
+    				}
 				}
 
-				cout << endl;
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+				std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 			}
 		}
 

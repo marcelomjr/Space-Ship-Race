@@ -10,6 +10,10 @@
 #include <thread> 
 #include <unistd.h> // closes
 
+#include <string>
+#include <cstring>
+
+
 #include "../Interfaces.hpp"
 
 #define PORT 3001
@@ -28,6 +32,7 @@ private:
 
 	int server_socket_fd;
 	struct sockaddr_in my_address;
+	int output_buffer_size;
 
 	/* Interface with ServerManager to check if the game still running 
 	and a channel to stop the game in case of something gets wrong. */
@@ -47,6 +52,7 @@ private:
 	void wait_for_connections();
 	bool add_connection(int connection_fd);
 	void remove_connection(int position);
+
 
 
 public:

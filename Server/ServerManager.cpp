@@ -11,7 +11,6 @@ int main() {
 
 void ServerManager::start() {
 
-	Model model;
 	ServerSocket server;
 
 	server.init(this, this);
@@ -21,10 +20,10 @@ void ServerManager::start() {
 
 		// create vector of players
 	for (int i = 0; i < 6; i++) {
-		float f = (float) i;
-	    Player player = {to_string(i), "rocket", {f,f,f}, {f,f,f}};
+		
 
-	    model.add_player(player);  
+/*
+	    
 	  }
 
 	  // create planets
@@ -37,7 +36,6 @@ void ServerManager::start() {
 	  cout << "4: <<" << model.serialize_model("6") << ">>" << endl << endl;
 
 	  cout << "2: <<" << model.serialize_model("2") << ">>" << endl << endl;;
-	  model.remove_player("3");
 
 	  cout << "2: <<" << model.serialize_model("2") << ">>" << endl << endl;;
 	  */
@@ -52,5 +50,23 @@ bool ServerManager::is_running() {
 	
 	
 void ServerManager::receiving_handler(string buffer) {
+	cout << "Received:" << buffer << endl;
 }
 
+string ServerManager::get_the_updated_model(int player_id) {
+
+	return this->model.serialize_model(player_id);
+}
+
+void ServerManager::new_player_connected(int player_id) {
+	cout << "Registrou " << player_id << endl;
+
+	Player player = {player_id, "", {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}};
+
+	this->model.add_player(player);
+}
+
+void ServerManager::player_desconnected(int player_id) {
+
+	model.remove_player(player_id);
+}

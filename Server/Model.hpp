@@ -9,7 +9,7 @@ using json = nlohmann::json;
 
 struct Player
 {
-	string player_id;
+	int player_id;
 	string ship_model;
 	float position[3];
 	float speed[3];
@@ -39,9 +39,9 @@ public:
 		
 	void add_player(Player player);
 
-	void remove_player(string player_id);
+	void remove_player(int player_id);
 
-	string serialize_model(string player_id);
+	string serialize_model(int player_id);
 };
 
 #endif

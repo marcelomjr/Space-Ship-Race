@@ -8,7 +8,7 @@
 #include <errno.h>
 
 #include "Client.hpp"
-
+#define IN_BUFFER_SZ 500
 
 int socket_fd;
 struct sockaddr_in target;
@@ -45,6 +45,23 @@ void Client::send_char(char character) {
       cout << "Error in client" << errno << endl;
 
     }
+}
+void Client::input_handler() {
+
+  /* Recebendo resposta */
+  char reply[IN_BUFFER_SZ];
+  int msg_len;
+  int msg_num;
+  msg_num = 0;
+
+  while(1) {
+  msg_len = recv(socket_fd, reply, IN_BUFFER_SZ, MSG_DONTWAIT);
+    if (msg_len > 0) {
+      printf("[%d][%d] RECEBI: aa%szz\n\n\n", msg_num, msg_len, reply);
+      msg_num++;
+    }
+  
+  }
 }
 
 void Client::stop() {

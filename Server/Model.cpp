@@ -12,7 +12,7 @@ void Model::add_player(Player player) {
 	this->players_data.push_back(player);
 }
 
-void Model::remove_player(string player_id) {
+void Model::remove_player(int player_id) {
 	bool found = false;
 
 	for (int i = 0; i < this->players_data.size() && !found; i++) {
@@ -25,10 +25,15 @@ void Model::remove_player(string player_id) {
 
 		}
 	}
+	cout << "apóx excluir o " << player_id << endl;
+	for (int i = 0; i < this->players_data.size(); i++) {
+		cout << this->players_data[i].player_id << " ";
+	}
+	cout << endl;
 
 }
 
-string Model::serialize_model(string player_id) {
+string Model::serialize_model(int player_id) {
 
 	bool was_the_player_found = false;
 
@@ -96,6 +101,8 @@ string Model::serialize_model(string player_id) {
 }
 
 void Model::player_to_json( Player player, json& j_player) {
+
+	j_player["player_id"] = player.player_id;
 
 	j_player["ship_model"] = player.ship_model;
 

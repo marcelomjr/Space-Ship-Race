@@ -15,6 +15,7 @@ char command = '.';
 
 void run_view(Client* client) {
 
+	/*
 	screen = new Screen();
 	screen->init();
 
@@ -28,7 +29,7 @@ void run_view(Client* client) {
 
 	screen->stop();
 	keyboard->stop();
-	cout << "Leaving run_view" << endl;
+	cout << "Leaving run_view" << endl;*/
 	
 }
 
@@ -38,6 +39,8 @@ int main () {
 	
 	char server_reply;
 	myself.init(&is_running);
+	myself.input_handler();
+
 
 	run_view(&myself);
 	myself.stop();
