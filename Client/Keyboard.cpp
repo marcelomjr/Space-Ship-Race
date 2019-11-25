@@ -7,29 +7,21 @@ using namespace std;
 void Keyboard::keyboard_loop() {
 	char input;
 	
-	while (*(this->is_reading)) {
+	while (this->game_manager->is_running()) {
 		//cout << this->is_reading << endl;
 
 		input = getch();
 		
 
 		if (input != ERR) {
-			*(this->last_pressed_key) = input;
-			this->send_command(input);
+			//*(this->last_pressed_key) = input;
+			this->keyboard_inteface->keystroke_handler(input);
 		
 		} else {
-			*(this->last_pressed_key) = 0;
+			//*(this->last_pressed_key) = 0;
 		}
 		
 		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-	}
-}
-
-void Keyboard::send_command(char command) {
-	this->myself->send_char(command);
-
-	if (command == 'q') {
-		*(this->is_reading) = false;
 	}
 }
 
@@ -37,11 +29,10 @@ Keyboard::Keyboard() {}
 
 Keyboard::~Keyboard() {}
 
-void Keyboard::init(Client* client, bool* is_running, char* command) {
+void Keyboard::init(GameManagerInterface* game_manager, KeyboardInterface* keyboard_inteface) {
 
-	this->myself = client;
-	this->is_reading = is_running;
-	this->last_pressed_key = command;
+	this->game_manager = game_manager;
+	this->keyboard_inteface = keyboard_inteface;
 	
 	raw();				         // Line buffering disabled
 	//keypad(stdscr, TRUE);	 	// We get F1, F2 etc..		
@@ -60,4 +51,5 @@ void Keyboard::init(Client* client, bool* is_running, char* command) {
 void Keyboard::stop() {
 	// It waits the thread ends
 	this->kb_thread.join();
+	cout << "Keyboard was stopped" << endl;
 }

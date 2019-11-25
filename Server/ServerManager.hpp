@@ -5,6 +5,7 @@
 #include "Model.hpp"
 #include "ServerSocket.hpp"
 #include "../Interfaces.hpp"
+#include "../json.hpp"
 
 
 class ServerManager: public System_Control_Interface, public Input_Handler_Interface
@@ -19,6 +20,11 @@ public:
 
 private:
 	Model model;
+	GameState game_state;
+
+	// Ignore commands from users
+	bool is_input_blocked;
+	void create_the_map();
 };
 
 #endif

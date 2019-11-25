@@ -33,21 +33,18 @@ void Model::remove_player(int player_id) {
 
 }
 
-string Model::serialize_model(int player_id) {
+string Model::serialize_model(int player_id, json& j) {
 
 	bool was_the_player_found = false;
-
-	// Final JSON
-	json j;
 	
 	// JSON for the current player
 	json current_player;
 
 	// JSON to the array of other players
-	json j_players;
+	json j_players = json::array();
 
 	// JSON to the array of planets
-	json j_planets;
+	json j_planets = json::array();
 
 	// It converts all the players objects to JSON
 	for (int i = 0; i < this->players_data.size(); i++) {

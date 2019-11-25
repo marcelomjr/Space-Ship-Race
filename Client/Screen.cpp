@@ -1,35 +1,52 @@
-#include <ncurses.h>
 #include "Screen.hpp"
-#include <vector>
-#include <iostream>
-
 
 /*
 //  * Reference: https://invisible-island.net/ncurses/ncurses-intro.html#overview
  */
 using namespace std;
-void Screen::init(std::vector<Body*>* body_list) {
-	initscr();			       /* Start curses mode 		*/
-	raw();				         /* Line buffering disabled	*/
-	curs_set(0);           /* Do not display cursor */
+
+void Screen::init(GameManagerInterface* game_manager) {
+
+	this->game_manager = game_manager;
+
+	initscr();		/* Start curses mode 		*/
+	raw();			/* Line buffering disabled	*/
+	curs_set(0);    /* Do not display cursor */
 
 	this->max_x = 30;
 	this->max_y = 100;
+}
 
-	this->body_list_pointer = body_list;
-	this->log = "default";
+void Screen::racing_screen(string place, float race_completed_percentage, float speed, VisualObject player, vector<VisualObject> map) {
 
-	// Update reference vector
-	for (int body = 0; body < (*(this->body_list_pointer)).size(); body++) {
-		this->old_body_list.push_back(*((*(this->body_list_pointer))[body]));	
-	}
+	move(0,0);
+	addstr(place.c_str());
 
-	//for(int i=0;i<map.size(); i++) {for (int j=0;j<map[i].size(); j++){cout << map[i][j] << " ";}cout << endl;}
+	move(1,0);
+	string percentage = "Completado: " + to_string(race_completed_percentage) + "%";
+	addstr(percentage.c_str());
+
+	move(2,0);
+	string full_speed = to_string(speed) + "km/h";
+	addstr(full_speed.c_str());
+	
+	refresh();
+
+}
+
+void Screen::waiting_screen(int number_of_players) {
+
+}
+
+void Screen::game_over_screen(string names[]) {
+
 }
 
 void Screen::stop() {
 	endwin();
 }
+
+/*
 
 void add_model(matrix map, vector<string> model, coordinate pos) {
 	for (int i = 0; i < model.size(); i++) {
@@ -46,7 +63,7 @@ void Screen::apply_body_list(bool to_clean, coordinate ship_pos) {
 
 	for (int body = 0; body < this->old_body_list.size(); body++) {
 
-		std::vector<std::string> model;
+		std::vector<string> model;
 
 		if (to_clean) {
 			model = this->old_body_list[body].get_delete_mask();
@@ -133,3 +150,4 @@ void Screen::update(Ship ship) {
 void Screen::log_message(string message) {
 	this-> log = message;
 }
+*/

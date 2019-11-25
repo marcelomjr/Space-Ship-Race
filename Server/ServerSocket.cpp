@@ -219,7 +219,7 @@ void ServerSocket::server_loop() {
   				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 				
 				cout << "Sent buffer size: " << buffer_size << endl;
-//				printf("(%s)\n", output_buffer_c);
+				//printf("(%s)\n", output_buffer_c);
 				//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 				if (buffer_size > 0) {

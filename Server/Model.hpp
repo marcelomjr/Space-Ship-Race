@@ -2,6 +2,7 @@
 #define MODEL_HPP
 
 #include "../json.hpp"
+#include "../Interfaces.hpp"
 
 using namespace std;
 
@@ -10,6 +11,8 @@ using json = nlohmann::json;
 struct Player
 {
 	int player_id;
+	PlayerState player_state;
+	string name;
 	string ship_model;
 	float position[3];
 	float speed[3];
@@ -41,7 +44,7 @@ public:
 
 	void remove_player(int player_id);
 
-	string serialize_model(int player_id);
+	string serialize_model(int player_id, json& j);
 };
 
 #endif
