@@ -19,7 +19,7 @@
 #define PORT 3001
 #define ADDRESS "127.0.0.1"
 #define BUFFER_SIZE 1
-#define MAX_CONNECTIONS 3
+#define MAX_CONNECTIONS 12
 
 
 using namespace std;

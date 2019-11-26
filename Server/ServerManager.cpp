@@ -21,7 +21,7 @@ void ServerManager::start() {
 	server.start();
 
 	Physics physics;
-	physics.init(10,100, -10, -5);
+	physics.init(100,100, -100, -100);
 
 
 	while (this->is_running_flag) {
@@ -39,11 +39,13 @@ void ServerManager::start() {
 
 		this->is_input_blocked = false;
 
+		this->model.activate_players();
+
 		this->game_state = racing;
 
 		while(this->game_state == racing) {
 
-			std::vector<Player> players = physics.update(0.1, this->model.get_players());
+			std::vector<Player> players = physics.update(0.1, this->model.get_players(), this->model.get_planets());
 
 			for (int i = 0; i < players.size(); ++i)
 			{
@@ -58,11 +60,24 @@ void ServerManager::start() {
 void ServerManager::create_the_map() {
 	 // create planets
 	  
-	    Planet new_planet1 = {"planet1", {20,20,0}, 4.0}; model.add_planet(new_planet1);
-	    Planet new_planet2 = {"planet1", {-20,20,0}, 4.0}; model.add_planet(new_planet2);
-	    Planet new_planet3 = {"planet1", {40,40,0}, 4.0}; model.add_planet(new_planet3);
-	    Planet new_planet4 = {"planet1", {-40,-40,0}, 4.0}; model.add_planet(new_planet4);
-	
+	    Planet new_planet1 = {"planet1", {0,0,0}, 4.0}; model.add_planet(new_planet1);
+	    Planet new_planet2 = {"planet1", {-10,20,0}, 4.0}; model.add_planet(new_planet2);
+	    Planet new_planet3 = {"planet1", {50,60,0}, 4.0}; model.add_planet(new_planet3);
+	    Planet new_planet4 = {"planet1", {-40,-50,0}, 4.0}; model.add_planet(new_planet4);
+
+	    std::vector<Player> players = this->model.get_players();
+
+	    float x = -20;
+
+	    for (int i = 0; i < players.size(); ++i)
+	    {
+	    	players[i].position.x = x++;
+	    	x += 10;
+	    	players[i].speed.y = 0;
+
+	    	this->model.update_player(players[i].player_id, players[i]);
+
+	    }	
 }
 
 
@@ -86,11 +101,11 @@ void ServerManager::receiving_handler(int id, string buffer) {
 
 	switch (buffer[0]) {
 		case 'a':
-			player.speed.x -= 5;
+			player.speed.x -= 3;
 			break;
 			
 		case 'd':
-			player.speed.x += 5;
+			player.speed.x += 3;
 			break;
 		
 		case 'w':
@@ -131,7 +146,7 @@ std::vector<int> wait_list;
 
 void ServerManager::new_player_connected(int player_id) {
 
-	if (this->game_state == racing) {
+	if (this->game_state != waiting) {
 		wait_list.push_back(player_id);
 		return;
 	}

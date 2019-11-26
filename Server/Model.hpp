@@ -49,6 +49,9 @@ public:
 	void update_player(int player_id, Player player);
 
 	std::vector<Player> get_players();
+	std::vector<Planet> get_planets();
+
+	void activate_players();
 };
 
 #endif

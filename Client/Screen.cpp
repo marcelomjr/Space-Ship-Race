@@ -31,7 +31,8 @@ void Screen::racing_screen(string place, float completed_percentage, float playe
 	}
 	//cout << endl << endl;
 	// Clear last frame
-	this->render_objects(this->old_map, old_player.position, true);
+	//this->render_objects(this->old_map, old_player.position, true);
+	erase();
 
 	move(0,0);
 	// Create new frame
@@ -47,12 +48,12 @@ void Screen::racing_screen(string place, float completed_percentage, float playe
 
 
 	move(0,20);
-	string position = "y: " + to_string(player.position.y);
+	string position = "x: " + to_string(player.position.x) + ", y: " + to_string(player.position.y);
 	addstr(position.c_str());
 
 	move(1,0);
 	string percentage = "Completado: " + to_string(completed_percentage) + "%";
-	addstr(percentage.c_str());
+	//addstr(percentage.c_str());
 
 	move(2,0);
 	string full_speed = to_string(player_speed) + "km/h";
@@ -89,19 +90,18 @@ std::vector<string> get_model(string model, bool clear_mask) {
 				"    ",
 				"    ",
 				"    ",
-				"    ",
 				"    "
 			};
 
 		}
 
 		return {
-			" /\\ ",
-			"/__\\",
-			"|::|",
-			"|::|",
-			"/^^\\",
-			"^^^^"
+
+			" /^\\ ",
+			"/:::\\",
+		   "\\___/",
+			"/^^^\\",
+			"^^^^^"
 		};
 	}
 
@@ -130,11 +130,22 @@ std::vector<string> get_model(string model, bool clear_mask) {
 			"   ooooooo   "
 		};
 	}
+
+	if (model == "dot") {
+		return{"O"};
+
+	}
+
 	return {"ERROR"};
 }
 
 void Screen::render_objects(vector<VisualObject> map, Coordinate player_position, bool clear_mode) {
 	bool to_clean = false;
+
+	VisualObject origin; origin.model = "dot";	origin.position.x = -20;	origin.position.y = 20;
+
+	map.push_back(origin);
+
 
 	for (int body = 0; body < map.size(); body++) {
 
@@ -151,10 +162,23 @@ void Screen::render_objects(vector<VisualObject> map, Coordinate player_position
 		double delta_x = real_pos.x - player_position.x;
 		double delta_y = real_pos.y - player_position.y;
 
-		// Applay a Coordinate transformation
-		Coordinate pos = {.x =((this->max_x/2) - delta_y), .y = ((this->max_y/2) + real_pos.x)};
-		//cout << "normal        : " << to_clean<< " :"<< real_pos.x << " "<< real_pos.y << endl;	
-		//cout << "transformation " << to_clean<< " :"<< pos.x << " "<< pos.y << endl;
+
+		// Correction of position
+		if (map[body].model == "planet1") {
+			delta_x -= 6;
+			delta_y += 3;
+		}
+		else if (map[body].model == "spaceship")  {
+			// Correction
+			delta_x -= 2;
+			delta_y += 2;
+		}
+
+		// Apply a Coordinate transformation
+		Coordinate pos = {.x =((this->max_x/2) - delta_y), .y = ((this->max_y/2) + delta_x)};
+
+		
+		
 
 
 		for (int i = 0; i < model.size(); i++) {

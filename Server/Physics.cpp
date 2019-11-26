@@ -10,26 +10,26 @@ void Physics::init(float max_x,float max_y, float min_x, float min_y) {
 	this->min_y = min_y;
 }
 
-bool Physics::has_colision(Coordinate point_1, Coordinate point_2) {
-	double delta_x = abs(point_1.x - point_2.x - 5);
+bool Physics::has_colision(Coordinate point_1, Coordinate point_2, float  horizontal_limit, float vertical_limit) {
+	double delta_x = abs(point_1.x - point_2.x);
 	double delta_y = abs(point_1.y - point_2.y);
 	
-	if (delta_x < 8.0 && delta_y < 4.0) {
+	if (delta_x < horizontal_limit && delta_y < vertical_limit) {
 		return true;
 	}
 	
 	return false;
 	
 }
-std::vector<Player> Physics::update(double deltaT, std::vector<Player> players) {
+std::vector<Player> Physics::update(double deltaT, std::vector<Player> players, std::vector<Planet> planets) {
 	
 	for (int body = 0; body < players.size(); body++){
 
 		Coordinate pos;
 		Coordinate speed = players[body].speed;
 
-		pos.x = players[body].position.x + players[body].speed.x * deltaT;
-		pos.y = players[body].position.y + players[body].speed.y * deltaT;
+		pos.x = players[body].position.x + speed.x * deltaT;
+		pos.y = players[body].position.y + speed.y * deltaT;
 
 		if (pos.x > this->max_x) {
 			pos.x = this->max_x;
@@ -54,22 +54,30 @@ std::vector<Player> Physics::update(double deltaT, std::vector<Player> players) 
 		players[body].speed = speed;
 		
 		cout << "please:{" << players[body].position.y << "}" << endl;
-		//this->model->update_player(players[body].player_id, ;
+		
 		
 	}
 
-	return players;
-	/*
-	for (int body = 1; body < this->body_list->size(); body++){
-		
-		if (has_colision((*this->body_list)[0]->get_position(), (*this->body_list)[body]->get_position())) {
-			
-			Coordinate zero = {.x = 0, .y =0 };
-			Coordinate speed = {.x = 0, .y =10 };
-			(*this->body_list)[0]->update(zero, speed);
-		}
-		
-	}*/
 	
+	for (int i = 0; i < players.size(); i++) {
+		for (int j = i + 1; j < players.size(); j++) {
+		
+			if (has_colision(players[i].position, players[j].position, 5, 5)) {
+				
+				players[i].player_state = inactive;
+				players[j].player_state = inactive;
+			}
+		}
+
+		for (int j = 0; j < planets.size(); j++) {
+		
+			if (has_colision(players[i].position, planets[j].position, 9, 6)) {
+				
+				players[i].player_state = inactive;
+			}
+		}
+	}
+	
+	return players;
 
 }

@@ -55,8 +55,18 @@ void GameManager::update_screen(string input_buffer) {
 		case racing:{
 
 			VisualObject player;
+
+			PlayerState player_state;
+
+			j["player"].at("player_state").get_to(player_state);
+
+			if (player_state == inactive) {
+				break;
+			}
+
 			
-			j["player"].at("model").get_to(player.model);	
+			j["player"].at("model").get_to(player.model);
+
 			j["player"]["position"].at("x").get_to(player.position.x);
 			j["player"]["position"].at("y").get_to(player.position.y);
 			j["player"]["position"].at("z").get_to(player.position.z);
@@ -92,8 +102,8 @@ void GameManager::update_screen(string input_buffer) {
 					VisualObject planet;
 					
 					j["map"][i]["position"].at("x").get_to(planet.position.x);
-					j["map"][i]["position"].at("x").get_to(planet.position.y);
-					j["map"][i]["position"].at("x").get_to(planet.position.z);
+					j["map"][i]["position"].at("y").get_to(planet.position.y);
+					j["map"][i]["position"].at("z").get_to(planet.position.z);
 
 					j["map"][i].at("model").get_to(planet.model);
 
