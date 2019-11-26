@@ -74,7 +74,7 @@ void ServerSocket::init(System_Control_Interface* system_control, Input_Handler_
 	// Set the interfaces
 	this->system_control = system_control;
 	this->input_handler = input_handler;
-	this->output_buffer_size = 500;
+	this->output_buffer_size = 10000;
 
 
 	// Set all the connection positions as free
@@ -236,7 +236,7 @@ void ServerSocket::server_loop() {
 
 
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				std::this_thread::sleep_for(std::chrono::milliseconds(25));
 			}
 		}
 

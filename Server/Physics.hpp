@@ -9,10 +9,14 @@ class Physics
 {
 	private:
 		Model* model;
+		float max_x;
+		float max_y;
+		float min_y;
+		float min_x;
 		
 
 	public:
-		//void init(Model* model);
+		void init(float max_x,float max_y, float min_x, float min_y);
 		std::vector<Player> update(double deltaT, std::vector<Player> players);
 		bool has_colision(Coordinate point_1, Coordinate point_2);
 		//Physics();

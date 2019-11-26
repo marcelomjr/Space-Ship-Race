@@ -18,6 +18,7 @@ public:
 	std::string get_the_updated_model(int player_id);
 	void new_player_connected(int player_id);
 	void player_desconnected(int player_id);
+	bool is_socket_active();
 
 private:
 	Model model;

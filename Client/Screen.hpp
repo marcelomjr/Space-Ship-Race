@@ -11,18 +11,22 @@ private:
 	int max_x;
 	int max_y;
 	GameManagerInterface* game_manager;
+	std::vector<VisualObject> old_map;
+	VisualObject old_player;
 	
 	
 //	string log;
 
 public:
 	void init(GameManagerInterface* game_manager);
-	void racing_screen(string place, float completed_percentage, float player_speed, ns::VisualObject player, vector<ns::VisualObject> map);
+	void racing_screen(string place, float completed_percentage, float player_speed, 
+					   VisualObject player, vector<VisualObject> map);
+
 	void waiting_screen(int number_of_players);
 	void game_over_screen(string names[]);
 	void stop();
 
-	void render_objects(vector<ns::VisualObject> map, Coordinate player_position);
+	void render_objects(vector<VisualObject> map, Coordinate player_position, bool clear_mode);
 
 	
 //	void log_message(string message);

@@ -12,8 +12,8 @@ int main() {
 void ServerManager::start() {
 
 	this->is_running_flag = true;
-	//TODO: CHANGE TO RACING
-	this->game_state = racing;
+	
+	this->game_state = waiting;
 
 	ServerSocket server;
 
@@ -21,6 +21,8 @@ void ServerManager::start() {
 	server.start();
 
 	Physics physics;
+	physics.init(10,100, -10, -5);
+
 
 	while (this->is_running_flag) {
 		while(this->game_state == waiting);
@@ -47,7 +49,7 @@ void ServerManager::start() {
 			{
 				this->model.update_player(players[i].player_id, players[i]);
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
 		}
 	}
@@ -71,6 +73,10 @@ bool ServerManager::is_running() {
 	
 	
 void ServerManager::receiving_handler(int id, string buffer) {
+
+	this->game_state = racing;
+
+
 
 	Player player = this->model.get_player(id);
 
@@ -103,7 +109,6 @@ void ServerManager::receiving_handler(int id, string buffer) {
 
 	
 
-	this->game_state = racing;
 	
 	// Converts the string to json
 	cout << "Received:" << buffer << endl;
@@ -126,10 +131,10 @@ std::vector<int> wait_list;
 
 void ServerManager::new_player_connected(int player_id) {
 
-	/*if (this->game_state == racing) {
+	if (this->game_state == racing) {
 		wait_list.push_back(player_id);
 		return;
-	}*/
+	}
 
 	cout << "Registrou " << player_id << endl;
 
@@ -148,4 +153,10 @@ void ServerManager::new_player_connected(int player_id) {
 void ServerManager::player_desconnected(int player_id) {
 
 	model.remove_player(player_id);
+}
+bool ServerManager::is_socket_active() {
+	if (this->game_state == racing) {
+		return true;
+	}
+	else return false;
 }

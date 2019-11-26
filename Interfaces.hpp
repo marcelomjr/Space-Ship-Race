@@ -11,14 +11,13 @@ struct Coordinate
 	float z;
 };
 
-namespace ns {
-    // a simple struct to model a person
+// a simple struct to model a person
 struct VisualObject
 {
 	Coordinate position;
 	string model;
 };
-}
+
 enum GameState
 {
 	waiting,
@@ -39,6 +38,7 @@ public:
 	virtual string get_the_updated_model(int player_id) = 0;
 	virtual void new_player_connected(int player_id) = 0;
 	virtual void player_desconnected(int player_id) = 0;
+	virtual bool is_socket_active() = 0;
 
 	//virtual void stop_game();
 	

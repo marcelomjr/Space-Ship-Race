@@ -34,10 +34,6 @@ void GameManager::start(string name) {
 	this->screen.stop();
 	this->socket.stop();
 
-	
-
-
-
 }
 
 bool GameManager::is_running() {
@@ -50,18 +46,15 @@ void GameManager::update_screen(string input_buffer) {
 
 	json j = json::parse(input_buffer);
 
-	std::vector<ns::VisualObject> map;
+	std::vector<VisualObject> map;
 
-	GameState game_state = racing;
-	//j.at("game_state").get_to(game_state);
-
-
-
+	GameState game_state;
+	j.at("game_state").get_to(game_state);
 
 	switch(game_state) {
 		case racing:{
 
-			ns::VisualObject player;
+			VisualObject player;
 			
 			j["player"].at("model").get_to(player.model);	
 			j["player"]["position"].at("x").get_to(player.position.x);
@@ -78,7 +71,7 @@ void GameManager::update_screen(string input_buffer) {
 
 				for (int i = 0; i < number_of_opponents; i++) {
 					
-					ns::VisualObject opponent;
+					VisualObject opponent;
 					
 					j["players"][i]["position"].at("x").get_to(opponent.position.x);
 					j["players"][i]["position"].at("y").get_to(opponent.position.y);
@@ -96,7 +89,7 @@ void GameManager::update_screen(string input_buffer) {
 				int number_of_planets = j["map"].size();
 
 				for (int i = 0; i < number_of_planets; i++) {
-					ns::VisualObject planet;
+					VisualObject planet;
 					
 					j["map"][i]["position"].at("x").get_to(planet.position.x);
 					j["map"][i]["position"].at("x").get_to(planet.position.y);
@@ -124,6 +117,11 @@ void GameManager::update_screen(string input_buffer) {
 			break;
 
 		}
+		case waiting: {
+			this->screen.waiting_screen(3);
+
+		}
+
 	}
 
 
@@ -139,7 +137,6 @@ void GameManager::receiving_handler(int id, string buffer) {
 }
 
 void GameManager::keystroke_handler(char key) {
-	cout << "typde:" << key << endl;
 
 	if (key == 'q') {
 		this->is_running_flag = false;

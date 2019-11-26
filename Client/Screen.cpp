@@ -10,6 +10,8 @@ void Screen::init(GameManagerInterface* game_manager) {
 	this->game_manager = game_manager;
 
 	initscr();		/* Start curses mode 		*/
+	noecho();			         // Don't echo() while we do getch
+
 	raw();			/* Line buffering disabled	*/
 	curs_set(0);    /* Do not display cursor */
 
@@ -17,27 +19,36 @@ void Screen::init(GameManagerInterface* game_manager) {
 	this->max_y = 100;
 }
 
-void Screen::racing_screen(string place, float completed_percentage, float player_speed, ns::VisualObject player, vector<ns::VisualObject> map) {
+void Screen::racing_screen(string place, float completed_percentage, float player_speed, VisualObject player, vector<VisualObject> map) {
 
 	//cout << "racing_screen" << map.size() << endl;
 
 	for (int i = 0; i < map.size(); ++i)
 	{
 		//cout << map[i].position.x << ", " << map[i].position.y << ", "<< map[i].position.z <<": " << map[i].model << endl;
+//		cout << this->old_map[i].position.x << ", " << this->old_map[i].position.y << ", "<< this->old_map[i].position.z <<": " << this->old_map[i].model << endl;
 		//move(map[i].position[0],map[i].position[1]);
-
-
 	}
-
-	this->render_objects(map, player.position);
-
+	//cout << endl << endl;
+	// Clear last frame
+	this->render_objects(this->old_map, old_player.position, true);
 
 	move(0,0);
+	// Create new frame
+	this->render_objects(map, player.position, false);
 
-	
+	// Save the current map	to use it after to clean the screen
+	this->old_map = map;
+	this->old_player = player;
 
+	move(0,0);
 	
 	addstr(place.c_str());
+
+
+	move(0,20);
+	string position = "y: " + to_string(player.position.y);
+	addstr(position.c_str());
 
 	move(1,0);
 	string percentage = "Completado: " + to_string(completed_percentage) + "%";
@@ -52,6 +63,10 @@ void Screen::racing_screen(string place, float completed_percentage, float playe
 }
 
 void Screen::waiting_screen(int number_of_players) {
+	move(0,0);
+	string message = "Há " + to_string(number_of_players) + "conectados";
+	addstr(message.c_str());
+	refresh();
 
 }
 
@@ -63,33 +78,48 @@ void Screen::stop() {
 	endwin();
 }
 
-/*
 
-void add_model(matrix map, vector<string> model, Coordinate pos) {
-	for (int i = 0; i < model.size(); i++) {
-		string row = model[i];
-		
-		for (int j = 0; j < row.length(); j++) {
-			map[pos.x + i][pos.y + j] = row[j];
-		}
-	}
-}
+std::vector<string> get_model(string model, bool clear_mask) {
 
-*/
-
-std::vector<string> get_model(string model) {
 
 	if (model == "spaceship") {
+		if (clear_mask) {
+			return {
+				"    ",
+				"    ",
+				"    ",
+				"    ",
+				"    ",
+				"    "
+			};
+
+		}
 
 		return {
-					" /\\",
-					"/__\\",
-					"|::|",
-					"|::|",
-					"/^^\\",
-					"^^^^"};
+			" /\\ ",
+			"/__\\",
+			"|::|",
+			"|::|",
+			"/^^\\",
+			"^^^^"
+		};
 	}
-	else if (model == "planet1") {
+
+	
+	if (model == "planet1") {
+		if (clear_mask) {
+			return {
+				"             ",  
+				"             ",
+				"             ",
+				"             ",
+				"             ",
+				"             ",
+				"             "
+			};
+
+		}
+
 		return {
 			"   ooooooo   ",  
 			" o         o ",
@@ -103,18 +133,15 @@ std::vector<string> get_model(string model) {
 	return {"ERROR"};
 }
 
-void Screen::render_objects(vector<ns::VisualObject> map, Coordinate player_position) {//(bool to_clean, Coordinate ship_pos) {
+void Screen::render_objects(vector<VisualObject> map, Coordinate player_position, bool clear_mode) {
 	bool to_clean = false;
 
 	for (int body = 0; body < map.size(); body++) {
 
 		std::vector<string> model;
 
-		if (to_clean) {
-			//model = this->map[body].get_delete_mask();
-		} else {
-			model =  get_model(map[body].model);
-		}
+		model =	get_model(map[body].model, clear_mode);
+
 		int _max_x = this->max_x;
 		int _max_y = this->max_y;
 

@@ -3,7 +3,12 @@
 #include "Model.hpp"
 #include "Physics.hpp"
 
-//void Physics::init(Model* model) {}
+void Physics::init(float max_x,float max_y, float min_x, float min_y) {
+	this->max_x = max_x;
+	this->max_y = max_y;
+	this->min_x = min_x;
+	this->min_y = min_y;
+}
 
 bool Physics::has_colision(Coordinate point_1, Coordinate point_2) {
 	double delta_x = abs(point_1.x - point_2.x - 5);
@@ -20,9 +25,33 @@ std::vector<Player> Physics::update(double deltaT, std::vector<Player> players) 
 	
 	for (int body = 0; body < players.size(); body++){
 
+		Coordinate pos;
+		Coordinate speed = players[body].speed;
 
-		players[body].position.x += players[body].speed.x * deltaT;
-		players[body].position.y += players[body].speed.y * deltaT;
+		pos.x = players[body].position.x + players[body].speed.x * deltaT;
+		pos.y = players[body].position.y + players[body].speed.y * deltaT;
+
+		if (pos.x > this->max_x) {
+			pos.x = this->max_x;
+			speed.x = 0;
+
+		}
+		else if (pos.x < this->min_x) {
+			pos.x = this->min_x;
+			speed.x = 0;
+		}
+
+		if (pos.y >this->max_y) {
+			pos.y = this->max_y;
+			speed.y = 0;
+		}
+		else if (pos.y < this->min_y) {
+			pos.y = this->min_y;
+			speed.y = 0;
+		}
+
+		players[body].position = pos;
+		players[body].speed = speed;
 		
 		cout << "please:{" << players[body].position.y << "}" << endl;
 		//this->model->update_player(players[body].player_id, ;
