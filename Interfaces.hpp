@@ -4,12 +4,21 @@
 #include <string>
 using namespace std;
 
-struct VisualObject
+struct Coordinate
 {
-	float position[3];
-	string model;
+	float x;
+	float y;
+	float z;
 };
 
+namespace ns {
+    // a simple struct to model a person
+struct VisualObject
+{
+	Coordinate position;
+	string model;
+};
+}
 enum GameState
 {
 	waiting,
@@ -37,7 +46,7 @@ public:
 class Input_Handler_Interface
 {
 public:
-	virtual void receiving_handler(string buffer) = 0;
+	virtual void receiving_handler(int id, string buffer) = 0;
 	
 };
 

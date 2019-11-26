@@ -101,16 +101,46 @@ void Model::player_to_json( Player player, json& j_player) {
 
 	j_player["player_id"] = player.player_id;
 
-	j_player["ship_model"] = player.ship_model;
+	j_player["model"] = player.ship_model;
 
-	j_player["position"] = player.position;
+	j_player["position"]["x"] = round(player.position.x);
+	j_player["position"]["y"] = round(player.position.y);
+	j_player["position"]["z"] = round(player.position.z);
+
 }
 
 void Model::planet_to_json(Planet planet, json& j_planet) {
 
-	j_planet["type"] = planet.type;
+	j_planet["model"] = planet.type;
 
-	j_planet["position"] = planet.position;
+	j_planet["position"]["x"] = round(planet.position.x);
+	j_planet["position"]["y"] = round(planet.position.y);
+	j_planet["position"]["z"] = round(planet.position.z);
 
 	j_planet["radius"] = planet.radius;
+}
+
+Player Model::get_player(int player_id) {
+	for (int i = 0; i < this->players_data.size(); ++i)
+	{
+		if (this->players_data[i].player_id == player_id) {
+			return this->players_data[i];
+		}
+	}
+	cout << "Not found this player:" << player_id << endl;
+}
+
+void Model::update_player(int player_id, Player player) {
+	for (int i = 0; i < this->players_data.size(); ++i)
+	{
+		if (this->players_data[i].player_id == player_id) {
+			this->players_data[i] = player;
+			return;
+		}
+	}
+	cout << "In update player, not found this player:" << player_id << endl;
+}
+
+std::vector<Player> Model::get_players() {
+	return this->players_data;
 }

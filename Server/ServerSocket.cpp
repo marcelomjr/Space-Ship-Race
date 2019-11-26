@@ -199,7 +199,7 @@ void ServerSocket::server_loop() {
 				
 				else if (msglen > 0) {
 					// Sends to appropriate interface to handle with the message.
-					this->input_handler->receiving_handler(in_buffer);
+					this->input_handler->receiving_handler(connection, in_buffer);
 				}
 
 				/*
@@ -236,7 +236,7 @@ void ServerSocket::server_loop() {
 
 
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 			}
 		}
 

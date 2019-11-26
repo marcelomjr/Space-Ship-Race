@@ -6,6 +6,7 @@
 #include "ServerSocket.hpp"
 #include "../Interfaces.hpp"
 #include "../json.hpp"
+#include "Physics.hpp"
 
 
 class ServerManager: public System_Control_Interface, public Input_Handler_Interface
@@ -13,7 +14,7 @@ class ServerManager: public System_Control_Interface, public Input_Handler_Inter
 public:
 	void start();
 	bool is_running();
-	void receiving_handler(string buffer);
+	void receiving_handler(int id, string buffer);
 	std::string get_the_updated_model(int player_id);
 	void new_player_connected(int player_id);
 	void player_desconnected(int player_id);
@@ -21,6 +22,7 @@ public:
 private:
 	Model model;
 	GameState game_state;
+	bool is_running_flag;
 
 	// Ignore commands from users
 	bool is_input_blocked;

@@ -11,17 +11,24 @@ int main() {
 
 void ServerManager::start() {
 
-	this->game_state = waiting;
+	this->is_running_flag = true;
+	//TODO: CHANGE TO RACING
+	this->game_state = racing;
 
 	ServerSocket server;
 
 	server.init(this, this);
 	server.start();
 
-	while (true) {
+	Physics physics;
+
+	while (this->is_running_flag) {
 		while(this->game_state == waiting);
 
+
 		this->is_input_blocked = true;
+
+		//update the waiting list
 
 		this->create_the_map();
 
@@ -32,47 +39,70 @@ void ServerManager::start() {
 
 		this->game_state = racing;
 
-		while(this->game_state == racing);
+		while(this->game_state == racing) {
+
+			std::vector<Player> players = physics.update(0.1, this->model.get_players());
+
+			for (int i = 0; i < players.size(); ++i)
+			{
+				this->model.update_player(players[i].player_id, players[i]);
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+		}
 	}
-
-	/*
-
-		// create vector of players
-	for (int i = 0; i < 6; i++) {
-		
-
-/*
-	    
-	  }
-
-	  // create planets
-	  for (int i = 0; i < 2; i++) {
-	  	float f = (float) i;
-	    Planet new_planet = {"type" + to_string(i), {f,f,f}, 4.0};
-	    model.add_planet(new_planet);
-	  }
-
-	  cout << "4: <<" << model.serialize_model("6") << ">>" << endl << endl;
-
-	  cout << "2: <<" << model.serialize_model("2") << ">>" << endl << endl;;
-
-	  cout << "2: <<" << model.serialize_model("2") << ">>" << endl << endl;;
-	  */
-	while (1);
 }
 
 void ServerManager::create_the_map() {
+	 // create planets
+	  
+	    Planet new_planet1 = {"planet1", {20,20,0}, 4.0}; model.add_planet(new_planet1);
+	    Planet new_planet2 = {"planet1", {-20,20,0}, 4.0}; model.add_planet(new_planet2);
+	    Planet new_planet3 = {"planet1", {40,40,0}, 4.0}; model.add_planet(new_planet3);
+	    Planet new_planet4 = {"planet1", {-40,-40,0}, 4.0}; model.add_planet(new_planet4);
+	
 }
 
 
 bool ServerManager::is_running() {
 
-	return true;
-	
+	return this->is_running_flag;
 }
 	
 	
-void ServerManager::receiving_handler(string buffer) {
+void ServerManager::receiving_handler(int id, string buffer) {
+
+	Player player = this->model.get_player(id);
+
+	if (buffer.size() < 1) {
+		return;
+	}
+
+	switch (buffer[0]) {
+		case 'a':
+			player.speed.x -= 5;
+			break;
+			
+		case 'd':
+			player.speed.x += 5;
+			break;
+		
+		case 'w':
+			player.speed.y += 1;
+			break;
+		
+		case 's':
+			player.speed.y -= 1;
+			break;
+		default:
+			return;
+	}
+	this->model.update_player(id, player);
+
+
+
+	
+
 	this->game_state = racing;
 	
 	// Converts the string to json
@@ -85,14 +115,32 @@ string ServerManager::get_the_updated_model(int player_id) {
 
 	j["game_state"] = this->game_state;
 
-	return this->model.serialize_model(player_id, j);
+	string serialized_model = this->model.serialize_model(player_id, j);
+
+	cout << serialized_model << endl;
+
+	return serialized_model;
 }
 
+std::vector<int> wait_list;
+
 void ServerManager::new_player_connected(int player_id) {
+
+	/*if (this->game_state == racing) {
+		wait_list.push_back(player_id);
+		return;
+	}*/
+
 	cout << "Registrou " << player_id << endl;
 
 	Player player;
+	player.position.x = 0;
+	player.position.y = 0;
+
+	player.speed.y = 1;
+
 	player.player_id = player_id;
+	player.ship_model = "spaceship";
 
 	this->model.add_player(player);
 }

@@ -17,17 +17,34 @@ void Screen::init(GameManagerInterface* game_manager) {
 	this->max_y = 100;
 }
 
-void Screen::racing_screen(string place, float race_completed_percentage, float speed, VisualObject player, vector<VisualObject> map) {
+void Screen::racing_screen(string place, float completed_percentage, float player_speed, ns::VisualObject player, vector<ns::VisualObject> map) {
+
+	//cout << "racing_screen" << map.size() << endl;
+
+	for (int i = 0; i < map.size(); ++i)
+	{
+		//cout << map[i].position.x << ", " << map[i].position.y << ", "<< map[i].position.z <<": " << map[i].model << endl;
+		//move(map[i].position[0],map[i].position[1]);
+
+
+	}
+
+	this->render_objects(map, player.position);
+
 
 	move(0,0);
+
+	
+
+	
 	addstr(place.c_str());
 
 	move(1,0);
-	string percentage = "Completado: " + to_string(race_completed_percentage) + "%";
+	string percentage = "Completado: " + to_string(completed_percentage) + "%";
 	addstr(percentage.c_str());
 
 	move(2,0);
-	string full_speed = to_string(speed) + "km/h";
+	string full_speed = to_string(player_speed) + "km/h";
 	addstr(full_speed.c_str());
 	
 	refresh();
@@ -48,7 +65,7 @@ void Screen::stop() {
 
 /*
 
-void add_model(matrix map, vector<string> model, coordinate pos) {
+void add_model(matrix map, vector<string> model, Coordinate pos) {
 	for (int i = 0; i < model.size(); i++) {
 		string row = model[i];
 		
@@ -58,38 +75,66 @@ void add_model(matrix map, vector<string> model, coordinate pos) {
 	}
 }
 
+*/
 
-void Screen::apply_body_list(bool to_clean, coordinate ship_pos) {
+std::vector<string> get_model(string model) {
 
-	for (int body = 0; body < this->old_body_list.size(); body++) {
+	if (model == "spaceship") {
+
+		return {
+					" /\\",
+					"/__\\",
+					"|::|",
+					"|::|",
+					"/^^\\",
+					"^^^^"};
+	}
+	else if (model == "planet1") {
+		return {
+			"   ooooooo   ",  
+			" o         o ",
+			"o           o",
+			"o           o",
+			"o           o",
+			" o         o ",
+			"   ooooooo   "
+		};
+	}
+	return {"ERROR"};
+}
+
+void Screen::render_objects(vector<ns::VisualObject> map, Coordinate player_position) {//(bool to_clean, Coordinate ship_pos) {
+	bool to_clean = false;
+
+	for (int body = 0; body < map.size(); body++) {
 
 		std::vector<string> model;
 
 		if (to_clean) {
-			model = this->old_body_list[body].get_delete_mask();
+			//model = this->map[body].get_delete_mask();
 		} else {
-			model = this->old_body_list[body].get_model();
+			model =  get_model(map[body].model);
 		}
 		int _max_x = this->max_x;
 		int _max_y = this->max_y;
 
 		//Get thmessage3e real position of each body in the map
-		coordinate real_pos = this->old_body_list[body].get_position();
+		Coordinate real_pos = map[body].position;
 
-		double delta_x = real_pos.x - ship_pos.x;
-		double delta_y = real_pos.y - ship_pos.y;
+		double delta_x = real_pos.x - player_position.x;
+		double delta_y = real_pos.y - player_position.y;
 
-		// Applay a coordinate transformation
-		coordinate pos = {.x =((this->max_x/2) - delta_y), .y = ((this->max_y/2) + real_pos.x)};
+		// Applay a Coordinate transformation
+		Coordinate pos = {.x =((this->max_x/2) - delta_y), .y = ((this->max_y/2) + real_pos.x)};
 		//cout << "normal        : " << to_clean<< " :"<< real_pos.x << " "<< real_pos.y << endl;	
 		//cout << "transformation " << to_clean<< " :"<< pos.x << " "<< pos.y << endl;
 
 
 		for (int i = 0; i < model.size(); i++) {
 			string row = model[i];
-
 			int x = pos.x + i;
 			if (x >= 0 && x < _max_x) {
+
 
 				for (int j = 0; j < row.length(); j++) {
 
@@ -105,10 +150,11 @@ void Screen::apply_body_list(bool to_clean, coordinate ship_pos) {
 	}
 	
 }
+/*
 void Screen::update(Ship ship) {
 	
 	// get the old ship position in real map
-	coordinate ship_pos = this->old_body_list[0].get_position();
+	Coordinate ship_pos = this->old_body_list[0].get_position();
 
 
 
@@ -130,7 +176,7 @@ void Screen::update(Ship ship) {
 	//while(1);
 
 	// Prepare to display status
-	coordinate ship_speed = this->old_body_list[0].get_speed();
+	Coordinate ship_speed = this->old_body_list[0].get_speed();
 	string status_speed = "speed: (" + to_string(ship_speed.x) + ", " + to_string(ship_speed.y) + ")";
 	string status_pos = "position: (" + to_string(ship_pos.x) + ", " + to_string(ship_pos.y) + ")";
 

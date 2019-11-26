@@ -6,6 +6,9 @@
 #include "ClientSocket.hpp"
 #include "Screen.hpp"
 #include "Keyboard.hpp"
+#include "../json.hpp"
+
+using json = nlohmann::json;
 
 class GameManager: public Input_Handler_Interface, public GameManagerInterface, public KeyboardInterface
 {
@@ -13,7 +16,7 @@ public:
 	void start(string name);
 	bool is_running();
 	void update_screen(string input_buffer);
-	void receiving_handler(string buffer);
+	void receiving_handler(int id, string buffer);
 	void keystroke_handler(char key);
 
 private:

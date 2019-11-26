@@ -56,10 +56,8 @@ void ClientSocket::receiving_loop() {
   while(this->game_manager->is_running()) {
   msg_len = recv(this->socket_fd, input_buffer, IN_BUFFER_SZ, MSG_DONTWAIT);
     if (msg_len > 0) {
-      printf("[%d][%s]\n\n", msg_len, input_buffer);
-      
-
-      this->input_handler->receiving_handler(input_buffer);
+      //printf("[%d][%s]\n\n", msg_len, input_buffer);
+      this->input_handler->receiving_handler(0, input_buffer);
     }
   
   }

@@ -2,20 +2,19 @@
 #define PHYSICS_HP
 
 #include <vector>
-#include "Ship.hpp"
-#include "Screen.hpp"
+#include "../Interfaces.hpp"
+#include "Model.hpp"
 
 class Physics
 {
 	private:
-		std::vector<Body*>* body_list;
+		Model* model;
 		
 
 	public:
-		Screen* screen_reference;
-		void init(std::vector<Body*>* body_list, Screen* screen_reference);
-		void update(double deltaT);
-		bool has_colision(coordinate point_1, coordinate point_2);
+		//void init(Model* model);
+		std::vector<Player> update(double deltaT, std::vector<Player> players);
+		bool has_colision(Coordinate point_1, Coordinate point_2);
 		//Physics();
 		//~Physics();
 	

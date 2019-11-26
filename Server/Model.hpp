@@ -14,13 +14,13 @@ struct Player
 	PlayerState player_state;
 	string name;
 	string ship_model;
-	float position[3];
-	float speed[3];
+	Coordinate position;
+	Coordinate speed;
 };
 
 struct Planet
 {	string type;
-	float position[3];
+	Coordinate position;
 	float radius;
 };
 
@@ -45,6 +45,10 @@ public:
 	void remove_player(int player_id);
 
 	string serialize_model(int player_id, json& j);
+	Player get_player(int player_id);
+	void update_player(int player_id, Player player);
+
+	std::vector<Player> get_players();
 };
 
 #endif
