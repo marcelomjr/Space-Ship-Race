@@ -55,7 +55,12 @@ string Model::serialize_model(int player_id, json& j) {
 			// Converts the player to JSON
 			this->player_to_json(this->players_data[i], current_player);
 			// Sends the player state as well
+			current_player["name"] = this->players_data[i].name;
 			current_player["player_state"] = this->players_data[i].player_state;
+			current_player["place"] = this->players_data[i].place;
+			current_player["speed"]["x"] = round(this->players_data[i].speed.x);
+			current_player["speed"]["y"] = round(this->players_data[i].speed.y);
+			current_player["speed"]["z"] = round(this->players_data[i].speed.z);
 
 
 			was_the_player_found = true;
@@ -64,7 +69,7 @@ string Model::serialize_model(int player_id, json& j) {
 		// Put the others players in a array (j_players)
 		else {
 			// Just send active players
-			if (this->players_data[i].player_state == active) {
+			if (this->players_data[i].player_state != inactive) {
 
 				json j_player;
 
@@ -91,6 +96,9 @@ string Model::serialize_model(int player_id, json& j) {
 		j_planets.push_back(j_planet);
 			
 	}
+
+
+	j["results"] = this->results;
 
 
 	// Add the current player JSON to the final JSON
@@ -127,8 +135,6 @@ void Model::planet_to_json(Planet planet, json& j_planet) {
 	j_planet["position"]["x"] = round(planet.position.x);
 	j_planet["position"]["y"] = round(planet.position.y);
 	j_planet["position"]["z"] = round(planet.position.z);
-
-	j_planet["radius"] = planet.radius;
 }
 
 Player Model::get_player(int player_id) {
@@ -165,4 +171,12 @@ void Model::activate_players() {
 	{
 		this->players_data[i].player_state = active;
 	}
+}
+
+void Model::update_results(std::vector<string> results) {
+	this->results = results;
+}
+
+std::vector<string> Model::get_results(){
+	return this->results;
 }

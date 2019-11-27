@@ -15,16 +15,30 @@ void Screen::init(GameManagerInterface* game_manager) {
 	raw();			/* Line buffering disabled	*/
 	curs_set(0);    /* Do not display cursor */
 
-	this->max_x = 30;
-	this->max_y = 100;
+	// Get terminal size
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+
+	this->max_x = w.ws_row;
+	this->max_y = w.ws_col;
 }
 
-void Screen::racing_screen(string place, float completed_percentage, float player_speed, VisualObject player, vector<VisualObject> map) {
+void Screen::racing_screen(int place, float completed_percentage, float player_speed, VisualObject player, vector<VisualObject> map, std::vector<string> results) {
 
-	//cout << "racing_screen" << map.size() << endl;
+	
 
-	for (int i = 0; i < map.size(); ++i)
+	for (int i = 0; i < 1000; ++i)
 	{
+		VisualObject left;
+		left.position = {-82.0, (float) i, 0.0};
+		left.model = "border";
+		map.push_back(left);
+
+		VisualObject right;
+		right.position = {82.0, (float) i, 0.0};
+		right.model = "border";
+		map.push_back(right);
+
 		//cout << map[i].position.x << ", " << map[i].position.y << ", "<< map[i].position.z <<": " << map[i].model << endl;
 //		cout << this->old_map[i].position.x << ", " << this->old_map[i].position.y << ", "<< this->old_map[i].position.z <<": " << this->old_map[i].model << endl;
 		//move(map[i].position[0],map[i].position[1]);
@@ -42,22 +56,34 @@ void Screen::racing_screen(string place, float completed_percentage, float playe
 	this->old_map = map;
 	this->old_player = player;
 
-	move(0,0);
-	
-	addstr(place.c_str());
+	move(1, this->max_y - 19);
+	string place_str = "Place: " + to_string((int)place);
+	addstr(place_str.c_str());
 
 
 	move(0,20);
-	string position = "x: " + to_string(player.position.x) + ", y: " + to_string(player.position.y);
-	addstr(position.c_str());
+	//string position = "x: " + to_string(player.position.x) + ", y: " + to_string(player.position.y);
+	//addstr(position.c_str());
 
 	move(1,0);
-	string percentage = "Completado: " + to_string(completed_percentage) + "%";
+	//string percentage = "Completado: " + to_string(completed_percentage) + "%";
 	//addstr(percentage.c_str());
 
-	move(2,0);
-	string full_speed = to_string(player_speed) + "km/h";
+	move(0,this->max_y - 19);
+	string full_speed = "Velocidade: " + to_string((int)player_speed) + "km/h";
 	addstr(full_speed.c_str());
+
+	/*if (results.size() > 0) {
+		move(2,this->max_y - 19);
+		addstr("Podium:");
+		for (int i = 0; i < results.size(); ++i) {
+			move(0,this->max_y - 19);
+			string podium = to_string(i + 1) + results[i];
+			addstr(podium.c_str());
+		
+			
+		}
+	}*/
 	
 	refresh();
 
@@ -65,8 +91,17 @@ void Screen::racing_screen(string place, float completed_percentage, float playe
 
 void Screen::waiting_screen(int number_of_players) {
 	move(0,0);
-	string message = "Há " + to_string(number_of_players) + "conectados";
+	
+
+
+	
+	string message2 = "Quando todos os jogadores estiverem conectados, basta teclar 's'";
+	addstr(message2.c_str());
+
+	move(2,0);
+	string message = "Há " + to_string(number_of_players) + " pessoas conectadas";
 	addstr(message.c_str());
+
 	refresh();
 
 }
@@ -135,16 +170,22 @@ std::vector<string> get_model(string model, bool clear_mask) {
 		return{"O"};
 
 	}
+	if (model == "border") {
+		return{"|"};
+
+	}
+	if (model == "start_line") {
+		return {"::::::::::::::::::::START"};
+	}
+	if (model == "finish_line") {
+		return {"::::::::::::::::::::FINISH"};
+	}
+
 
 	return {"ERROR"};
 }
 
 void Screen::render_objects(vector<VisualObject> map, Coordinate player_position, bool clear_mode) {
-	bool to_clean = false;
-
-	VisualObject origin; origin.model = "dot";	origin.position.x = -20;	origin.position.y = 20;
-
-	map.push_back(origin);
 
 
 	for (int body = 0; body < map.size(); body++) {
@@ -159,8 +200,8 @@ void Screen::render_objects(vector<VisualObject> map, Coordinate player_position
 		//Get thmessage3e real position of each body in the map
 		Coordinate real_pos = map[body].position;
 
-		double delta_x = real_pos.x - player_position.x;
-		double delta_y = real_pos.y - player_position.y;
+		float delta_x = real_pos.x - player_position.x;
+		float delta_y = real_pos.y - player_position.y;
 
 
 		// Correction of position
@@ -175,7 +216,7 @@ void Screen::render_objects(vector<VisualObject> map, Coordinate player_position
 		}
 
 		// Apply a Coordinate transformation
-		Coordinate pos = {.x =((this->max_x/2) - delta_y), .y = ((this->max_y/2) + delta_x)};
+		Coordinate pos = {.x =((this->max_x/2) - delta_y + 10), .y = ((this->max_y/2) + delta_x)};
 
 		
 		

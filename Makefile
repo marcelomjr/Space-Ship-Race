@@ -7,10 +7,11 @@ GAME_MANAGER=Client/GameManager.cpp
 KEYBOARD=Client/Keyboard.cpp
 SCREEN=Client/Screen.cpp
 PHYSICS=Server/Physics.cpp
+RACING_CONTROLLER=Server/RacingController.cpp
 
 
-server: $(SERVER_MANAGER) $(MODEL) $(SOCKET) $(PHYSICS)
-	g++  -o server $(SERVER_MANAGER) $(MODEL) $(SOCKET) $(PHYSICS) $(FLAGS)	
+server: $(SERVER_MANAGER) $(MODEL) $(SOCKET) $(PHYSICS) $(RACING_CONTROLLER)
+	g++  -o server $(SERVER_MANAGER) $(MODEL) $(SOCKET) $(PHYSICS) $(RACING_CONTROLLER) $(FLAGS)	
 
 game: $(GAME_MANAGER) $(CLIENT_SOCKET) $(SCREEN) $(KEYBOARD) 
 	g++ -o game $(GAME_MANAGER) $(CLIENT_SOCKET) $(SCREEN) $(KEYBOARD) $(FLAGS)

@@ -7,6 +7,8 @@
 #include "../Interfaces.hpp"
 #include "../json.hpp"
 #include "Physics.hpp"
+#include <stdlib.h>     /* srand, rand */
+#include "RacingController.hpp"
 
 
 class ServerManager: public System_Control_Interface, public Input_Handler_Interface
@@ -22,8 +24,11 @@ public:
 
 private:
 	Model model;
+	Physics physics;
+	RacingController racing_controller;
 	GameState game_state;
 	bool is_running_flag;
+	float finish_line;
 
 	// Ignore commands from users
 	bool is_input_blocked;

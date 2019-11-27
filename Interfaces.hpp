@@ -28,7 +28,10 @@ enum GameState
 enum PlayerState
 {
 	active,
-	inactive
+	inactive,
+	collided,
+	finished
+
 };
 
 class System_Control_Interface

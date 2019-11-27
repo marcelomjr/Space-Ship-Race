@@ -17,6 +17,15 @@ void GameManager::start(string name) {
 	this->socket.init(this, this);
 	this->socket.start();
 
+	json j;
+	j["name"] = name;
+	cout << name << endl;
+	string message = j.dump();
+	//cout << message << endl;
+	//this->socket.send_message(message);
+	//while(1);
+
+
 	Keyboard keyboard;
 
 	keyboard.init(this, this);
@@ -111,17 +120,34 @@ void GameManager::update_screen(string input_buffer) {
 				}
 			}
 
-			string place;
-			//j.at("place").get_to(place);
+			int place;
+			j["player"].at("place").get_to(place);
 
 			float percentage;
-			//j.at("completed_percentage").get_to(percentage);
+			//j["player"].at("completed_percentage").get_to(percentage);
 
 			float speed;
-			//j.at("player_speed").get_to(speed);
+			j["player"]["speed"].at("y").get_to(speed);
+
+			std::vector<string> results;
+			
+			if (!j["results"][0].is_null()) {
+
+				int results_number = j["results"].size();
+
+				//for (json::iterator it = j.begin(); it != j.end(); ++it) {results.push_back(it.value);}
 
 
-			this->screen.racing_screen(place, percentage, speed, player, map);
+				for (int i = 0; i < results_number; i++) {
+					string result;
+					j["results"][i].get_to(result);
+					results.push_back(result);
+
+				}
+			}
+
+
+			this->screen.racing_screen(place, percentage, speed, player, map, results);
 			//racing_screen(string place, float completed_percentage, float player_speed, VisualObject player, vector<VisualObject> map);
 
 			break;
@@ -151,6 +177,7 @@ void GameManager::keystroke_handler(char key) {
 	if (key == 'q') {
 		this->is_running_flag = false;
 	}
+	
 	string buffer(1, key);
 
 	// send to key to the server

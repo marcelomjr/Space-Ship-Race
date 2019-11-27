@@ -11,6 +11,7 @@ using json = nlohmann::json;
 struct Player
 {
 	int player_id;
+	int place;
 	PlayerState player_state;
 	string name;
 	string ship_model;
@@ -19,8 +20,10 @@ struct Player
 };
 
 struct Planet
-{	string type;
+{	
+	string type;
 	Coordinate position;
+	bool can_collide;
 	float radius;
 };
 
@@ -30,6 +33,7 @@ private:
 	//map current_map;
 	vector<Player> players_data;
 	vector<Planet> game_map;
+	std::vector<string> results;
 
 	// Private functions
 	void player_to_json( Player player, json& j_player);
@@ -52,6 +56,8 @@ public:
 	std::vector<Planet> get_planets();
 
 	void activate_players();
+	void update_results(std::vector<string> results);
+	std::vector<string> get_results();
 };
 
 #endif

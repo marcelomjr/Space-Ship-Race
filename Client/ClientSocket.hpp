@@ -12,7 +12,7 @@
 #include <cstring>
 #include "../Interfaces.hpp"
 
-#define IN_BUFFER_SZ 10000
+#define IN_BUFFER_SZ 20000
 
 class ClientSocket {
 

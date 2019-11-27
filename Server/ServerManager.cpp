@@ -20,9 +20,6 @@ void ServerManager::start() {
 	server.init(this, this);
 	server.start();
 
-	Physics physics;
-	physics.init(100,100, -100, -100);
-
 
 	while (this->is_running_flag) {
 		while(this->game_state == waiting);
@@ -45,7 +42,15 @@ void ServerManager::start() {
 
 		while(this->game_state == racing) {
 
-			std::vector<Player> players = physics.update(0.1, this->model.get_players(), this->model.get_planets());
+			std::vector<Player> players = this->model.get_players();
+
+			players = physics.update(0.1, players, this->model.get_planets());
+
+			std::vector<string> results = this->model.get_results();
+
+			players = racing_controller.update(players, this->finish_line, results);
+
+			this->model.update_results(results);
 
 			for (int i = 0; i < players.size(); ++i)
 			{
@@ -58,26 +63,76 @@ void ServerManager::start() {
 }
 
 void ServerManager::create_the_map() {
-	 // create planets
-	  
-	    Planet new_planet1 = {"planet1", {0,0,0}, 4.0}; model.add_planet(new_planet1);
-	    Planet new_planet2 = {"planet1", {-10,20,0}, 4.0}; model.add_planet(new_planet2);
-	    Planet new_planet3 = {"planet1", {50,60,0}, 4.0}; model.add_planet(new_planet3);
-	    Planet new_planet4 = {"planet1", {-40,-50,0}, 4.0}; model.add_planet(new_planet4);
+		
+	// Define the limits of the space
+	float min_x = -80;
+	float max_x = 80;
+	float min_y = -10;
+	float max_y = 1000;
+	this->finish_line = max_y - 15;
 
-	    std::vector<Player> players = this->model.get_players();
+	this->physics.init(min_x, max_x, min_y, max_y);
 
-	    float x = -20;
+	// create planets
+	float y = 30;
+	float x = min_y;
 
-	    for (int i = 0; i < players.size(); ++i)
-	    {
-	    	players[i].position.x = x++;
-	    	x += 10;
-	    	players[i].speed.y = 0;
+	float horizontal_distance = 20;
 
-	    	this->model.update_player(players[i].player_id, players[i]);
+	for (int i = min_x; i < max_x; i += 25)
+	{
+		Planet start_line;
+		start_line.position = {(float) i, 10.0, 0.0};
+		start_line.type = "start_line";
+		start_line.can_collide = false;
+		
+		model.add_planet(start_line);
+		
+	}
 
-	    }	
+	for (int i = min_x; i < max_x; i += 26)
+	{
+		Planet finish_line_object;
+		finish_line_object.position = {(float) i, this->finish_line, 0.0};
+		finish_line_object.type = "finish_line";
+		finish_line_object.can_collide = false;
+		
+		model.add_planet(finish_line_object);
+		
+	}
+
+	
+	x = min_x -10;
+	while (y < this->finish_line) {
+
+		while (x < max_x) {
+			x += float ((rand() % (int) horizontal_distance) + 5);
+		
+			y += float ((rand() % 15) + 10);
+
+			// New Planet
+			Planet new_planet;
+			new_planet.position = {x,y,0.0};
+			new_planet.type = "planet1";
+			new_planet.can_collide = true;
+			model.add_planet(new_planet);
+		}
+		x = min_x -10;
+		horizontal_distance = horizontal_distance * 0.8;
+	}
+	    
+    std::vector<Player> players = this->model.get_players();
+
+    float spawn_x = (max_x - min_x) / players.size();
+
+    for (int i = 0; i < players.size(); ++i)
+    {
+    	players[i].position.x = min_x + spawn_x * players[i].player_id;
+    	players[i].speed.y = 0;
+
+    	this->model.update_player(players[i].player_id, players[i]);
+
+    }	
 }
 
 
@@ -88,8 +143,31 @@ bool ServerManager::is_running() {
 	
 	
 void ServerManager::receiving_handler(int id, string buffer) {
+			
+	if (this->game_state == waiting) {
 
-	this->game_state = racing;
+		if (buffer.size() == 1 && buffer[0] == 's') {
+			this->game_state = racing;
+			return;
+		}
+
+		else if (buffer.size() > 1) {
+
+			json j = json::parse(buffer);
+
+			if (!j["name"].is_null()) {
+				Player player = this->model.get_player(id);
+				j["name"].get_to(player.name);
+
+				this->model.update_player(id, player);
+			} 
+		}
+		return;
+	}
+
+
+	float max_y_speed = 15;
+	float max_x_speed = 6;
 
 
 
@@ -102,18 +180,30 @@ void ServerManager::receiving_handler(int id, string buffer) {
 	switch (buffer[0]) {
 		case 'a':
 			player.speed.x -= 3;
+			if (player.speed.x < -max_x_speed) {
+				player.speed.x = -max_x_speed;
+			}
 			break;
 			
 		case 'd':
 			player.speed.x += 3;
+			if (player.speed.x > max_x_speed) {
+				player.speed.x = max_x_speed;
+			}
 			break;
 		
 		case 'w':
 			player.speed.y += 1;
+			if (player.speed.y > max_y_speed) {
+				player.speed.y = max_y_speed;
+			}
 			break;
 		
 		case 's':
 			player.speed.y -= 1;
+			if (player.speed.y < -max_y_speed) {
+				player.speed.y = -max_y_speed;
+			}
 			break;
 		default:
 			return;
@@ -163,6 +253,7 @@ void ServerManager::new_player_connected(int player_id) {
 	player.ship_model = "spaceship";
 
 	this->model.add_player(player);
+
 }
 
 void ServerManager::player_desconnected(int player_id) {
