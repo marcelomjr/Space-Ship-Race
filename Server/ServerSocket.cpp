@@ -177,7 +177,7 @@ void ServerSocket::server_loop() {
 
 				//TODO: REMOVE
 				//<<<<<<<<<<<<<<<<<<<<<<<<<<<
-				cout << "Received: message lenght: " << msglen << "|\terrno: " << errno << endl;
+				cout << "Received: message lenght: " << msglen << ": " << in_buffer<< endl;
 
 				//TODO: Remove this
 				for (int i = 0; i < MAX_CONNECTIONS; i++) {
@@ -236,7 +236,7 @@ void ServerSocket::server_loop() {
 
 
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(25));
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
 		}
 

@@ -26,6 +26,7 @@ public:
 	void waiting_screen(int number_of_players);
 	void game_over_screen(string names[]);
 	void stop();
+	void debug(string buffer); 
 
 	void render_objects(vector<VisualObject> map, Coordinate player_position, bool clear_mode);
 

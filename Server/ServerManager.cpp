@@ -65,8 +65,8 @@ void ServerManager::start() {
 void ServerManager::create_the_map() {
 		
 	// Define the limits of the space
-	float min_x = -80;
-	float max_x = 80;
+	float min_x = -100;
+	float max_x = 100;
 	float min_y = -10;
 	float max_y = 1000;
 	this->finish_line = max_y - 15;
@@ -79,7 +79,7 @@ void ServerManager::create_the_map() {
 
 	float horizontal_distance = 20;
 
-	for (int i = min_x; i < max_x; i += 25)
+	for (int i = min_x; i < max_x; i += 20)
 	{
 		Planet start_line;
 		start_line.position = {(float) i, 10.0, 0.0};
@@ -90,7 +90,7 @@ void ServerManager::create_the_map() {
 		
 	}
 
-	for (int i = min_x; i < max_x; i += 26)
+	for (int i = min_x; i < max_x; i += 20)
 	{
 		Planet finish_line_object;
 		finish_line_object.position = {(float) i, this->finish_line, 0.0};
@@ -100,7 +100,8 @@ void ServerManager::create_the_map() {
 		model.add_planet(finish_line_object);
 		
 	}
-
+	
+	srand ( time(NULL) );
 	
 	x = min_x -10;
 	while (y < this->finish_line) {
@@ -217,6 +218,7 @@ void ServerManager::receiving_handler(int id, string buffer) {
 	
 	// Converts the string to json
 	cout << "Received:" << buffer << endl;
+	
 }
 
 string ServerManager::get_the_updated_model(int player_id) {

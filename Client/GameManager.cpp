@@ -22,17 +22,15 @@ void GameManager::start(string name) {
 	cout << name << endl;
 	string message = j.dump();
 	//cout << message << endl;
+	
+	
 	//this->socket.send_message(message);
-	//while(1);
-
 
 	Keyboard keyboard;
 
 	keyboard.init(this, this);
 
 	this->screen.init(this);
-
-	
 
 	while(this->is_running()) {
 		
@@ -52,13 +50,20 @@ bool GameManager::is_running() {
 
 float vel = 0;
 void GameManager::update_screen(string input_buffer) {
-
-	json j = json::parse(input_buffer);
+	
+	json j;
+	//TODO: DELETE
+	//this->screen.debug(input_buffer);return;
+	
+	j = json::parse(input_buffer);
 
 	std::vector<VisualObject> map;
 
 	GameState game_state;
 	j.at("game_state").get_to(game_state);
+	
+	
+	
 
 	switch(game_state) {
 		case racing:{
@@ -179,6 +184,10 @@ void GameManager::keystroke_handler(char key) {
 	}
 	
 	string buffer(1, key);
+	
+	//TODO: DELETE
+	//this->screen.stop();
+
 
 	// send to key to the server
 	this->socket.send_message(buffer);

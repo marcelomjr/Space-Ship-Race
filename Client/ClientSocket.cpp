@@ -13,7 +13,7 @@ void ClientSocket::init(GameManagerInterface* game_manager, Input_Handler_Interf
 
   target.sin_family = AF_INET;
   target.sin_port = htons(3001);
-  inet_aton("127.0.0.1", &(target.sin_addr));
+  inet_aton("143.106.150.212", &(target.sin_addr));
   
   bool is_connected = false;
   while (!is_connected) {
@@ -37,6 +37,8 @@ void ClientSocket::send_message(string message) {
     // It Converts the std::string to a c string
     char * output_buffer = new char [buffer_size];
     std::strcpy (output_buffer, message.c_str());
+	 
+	 cout << output_buffer << endl;
 
 
     int status = send(socket_fd, output_buffer, buffer_size, MSG_NOSIGNAL);
@@ -57,6 +59,7 @@ void ClientSocket::receiving_loop() {
   msg_len = recv(this->socket_fd, input_buffer, IN_BUFFER_SZ, MSG_DONTWAIT);
     if (msg_len > 0) {
       //printf("[%d][%s]\n\n", msg_len, input_buffer);
+		
       this->input_handler->receiving_handler(0, input_buffer);
     }
   

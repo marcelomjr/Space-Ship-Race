@@ -27,15 +27,15 @@ void Screen::racing_screen(int place, float completed_percentage, float player_s
 
 	
 
-	for (int i = 0; i < 1000; ++i)
+	for (int i = -50; i < 1050; ++i)
 	{
 		VisualObject left;
-		left.position = {-82.0, (float) i, 0.0};
+		left.position = {-102.0, (float) i, 0.0};
 		left.model = "border";
 		map.push_back(left);
 
 		VisualObject right;
-		right.position = {82.0, (float) i, 0.0};
+		right.position = {102.0, (float) i, 0.0};
 		right.model = "border";
 		map.push_back(right);
 
@@ -73,7 +73,7 @@ void Screen::racing_screen(int place, float completed_percentage, float player_s
 	string full_speed = "Velocidade: " + to_string((int)player_speed) + "km/h";
 	addstr(full_speed.c_str());
 
-	/*if (results.size() > 0) {
+	if (results.size() > 0) {
 		move(2,this->max_y - 19);
 		addstr("Podium:");
 		for (int i = 0; i < results.size(); ++i) {
@@ -83,7 +83,7 @@ void Screen::racing_screen(int place, float completed_percentage, float player_s
 		
 			
 		}
-	}*/
+	}
 	
 	refresh();
 
@@ -107,6 +107,17 @@ void Screen::waiting_screen(int number_of_players) {
 }
 
 void Screen::game_over_screen(string names[]) {
+	
+
+}
+void Screen::debug(string buffer) {
+	move(0,0);
+
+	erase();
+
+	addstr(buffer.c_str());
+
+	refresh();
 
 }
 
@@ -175,10 +186,10 @@ std::vector<string> get_model(string model, bool clear_mask) {
 
 	}
 	if (model == "start_line") {
-		return {"::::::::::::::::::::START"};
+		return {":::::::::::::::START"};
 	}
 	if (model == "finish_line") {
-		return {"::::::::::::::::::::FINISH"};
+		return {"::::::::::::::FINISH"};
 	}
 
 
@@ -188,7 +199,7 @@ std::vector<string> get_model(string model, bool clear_mask) {
 void Screen::render_objects(vector<VisualObject> map, Coordinate player_position, bool clear_mode) {
 
 
-	for (int body = 0; body < map.size(); body++) {
+	for (int body = map.size() - 1; body > -1; body--) {
 
 		std::vector<string> model;
 
