@@ -13,6 +13,8 @@
 #include "../Interfaces.hpp"
 
 #define IN_BUFFER_SZ 20000
+#define ADDRESS "127.0.0.1"
+
 
 class ClientSocket {
 

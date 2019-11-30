@@ -10,7 +10,7 @@ PHYSICS=Server/Physics.cpp
 RACING_CONTROLLER=Server/RacingController.cpp
 
 
-server: $(SERVER_MANAGER) $(MODEL) $(SOCKET) $(PHYSICS) $(RACING_CONTROLLER)
+server: $(SERVER_MANAGER) $(MODEL) $(SOCKET) $(PHYSICS) $(RACING_CONTROLLER) game
 	g++  -o server $(SERVER_MANAGER) $(MODEL) $(SOCKET) $(PHYSICS) $(RACING_CONTROLLER) $(FLAGS)	
 
 game: $(GAME_MANAGER) $(CLIENT_SOCKET) $(SCREEN) $(KEYBOARD) 
@@ -18,7 +18,7 @@ game: $(GAME_MANAGER) $(CLIENT_SOCKET) $(SCREEN) $(KEYBOARD)
 	
 
 clean:
-	rm game server old_game
+	rm game server
 
 add:
 	git add *.cpp *.hpp */*.hpp */*.cpp Makefile

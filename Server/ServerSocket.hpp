@@ -17,7 +17,7 @@
 #include "../Interfaces.hpp"
 
 #define PORT 3001
-#define ADDRESS "143.106.150.212"
+#define ADDRESS "127.0.0.1"
 #define BUFFER_SIZE 1000
 #define MAX_CONNECTIONS 12
 

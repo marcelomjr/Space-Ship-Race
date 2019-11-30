@@ -28,8 +28,6 @@ std::vector<Player> RacingController::update(std::vector<Player> players, float 
 		}
 	}
 
-	cout << endl;
-
 	return players;
 
 }

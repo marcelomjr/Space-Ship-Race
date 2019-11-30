@@ -124,11 +124,11 @@ void ServerManager::create_the_map() {
 	    
     std::vector<Player> players = this->model.get_players();
 
-    float spawn_x = (max_x - min_x) / players.size();
+    float spawn_x = (max_x - min_x) / (players.size() + 1);
 
     for (int i = 0; i < players.size(); ++i)
     {
-    	players[i].position.x = min_x + spawn_x * players[i].player_id;
+    	players[i].position.x = min_x + spawn_x * (players[i].player_id + 1);
     	players[i].speed.y = 0;
 
     	this->model.update_player(players[i].player_id, players[i]);
@@ -210,11 +210,6 @@ void ServerManager::receiving_handler(int id, string buffer) {
 			return;
 	}
 	this->model.update_player(id, player);
-
-
-
-	
-
 	
 	// Converts the string to json
 	cout << "Received:" << buffer << endl;
@@ -229,7 +224,7 @@ string ServerManager::get_the_updated_model(int player_id) {
 
 	string serialized_model = this->model.serialize_model(player_id, j);
 
-	cout << serialized_model << endl;
+	//cout << serialized_model << endl;
 
 	return serialized_model;
 }
@@ -242,8 +237,6 @@ void ServerManager::new_player_connected(int player_id) {
 		wait_list.push_back(player_id);
 		return;
 	}
-
-	cout << "Registrou " << player_id << endl;
 
 	Player player;
 	player.position.x = 0;

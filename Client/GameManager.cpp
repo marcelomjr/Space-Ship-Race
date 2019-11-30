@@ -19,12 +19,9 @@ void GameManager::start(string name) {
 
 	json j;
 	j["name"] = name;
-	cout << name << endl;
 	string message = j.dump();
-	//cout << message << endl;
 	
-	
-	//this->socket.send_message(message);
+	this->socket.send_message(message);
 
 	Keyboard keyboard;
 
@@ -83,7 +80,7 @@ void GameManager::update_screen(string input_buffer) {
 
 			j["player"]["position"].at("x").get_to(player.position.x);
 			j["player"]["position"].at("y").get_to(player.position.y);
-			j["player"]["position"].at("z").get_to(player.position.z);
+			//j["player"]["position"].at("z").get_to(player.position.z);
 
 			map.push_back(player);
 
@@ -99,7 +96,7 @@ void GameManager::update_screen(string input_buffer) {
 					
 					j["players"][i]["position"].at("x").get_to(opponent.position.x);
 					j["players"][i]["position"].at("y").get_to(opponent.position.y);
-					j["players"][i]["position"].at("z").get_to(opponent.position.z);
+					//j["players"][i]["position"].at("z").get_to(opponent.position.z);
 
 					j["players"][i].at("model").get_to(opponent.model);
 
@@ -117,7 +114,7 @@ void GameManager::update_screen(string input_buffer) {
 					
 					j["map"][i]["position"].at("x").get_to(planet.position.x);
 					j["map"][i]["position"].at("y").get_to(planet.position.y);
-					j["map"][i]["position"].at("z").get_to(planet.position.z);
+					//j["map"][i]["position"].at("z").get_to(planet.position.z);
 
 					j["map"][i].at("model").get_to(planet.model);
 
@@ -140,8 +137,6 @@ void GameManager::update_screen(string input_buffer) {
 
 				int results_number = j["results"].size();
 
-				//for (json::iterator it = j.begin(); it != j.end(); ++it) {results.push_back(it.value);}
-
 
 				for (int i = 0; i < results_number; i++) {
 					string result;
@@ -153,7 +148,6 @@ void GameManager::update_screen(string input_buffer) {
 
 
 			this->screen.racing_screen(place, percentage, speed, player, map, results);
-			//racing_screen(string place, float completed_percentage, float player_speed, VisualObject player, vector<VisualObject> map);
 
 			break;
 

@@ -1,4 +1,6 @@
 #include "Screen.hpp"
+#include <math.h>       /* round, floor, ceil, trunc */
+
 
 /*
 //  * Reference: https://invisible-island.net/ncurses/ncurses-intro.html#overview
@@ -38,14 +40,10 @@ void Screen::racing_screen(int place, float completed_percentage, float player_s
 		right.position = {102.0, (float) i, 0.0};
 		right.model = "border";
 		map.push_back(right);
-
-		//cout << map[i].position.x << ", " << map[i].position.y << ", "<< map[i].position.z <<": " << map[i].model << endl;
-//		cout << this->old_map[i].position.x << ", " << this->old_map[i].position.y << ", "<< this->old_map[i].position.z <<": " << this->old_map[i].model << endl;
-		//move(map[i].position[0],map[i].position[1]);
 	}
-	//cout << endl << endl;
+
+	
 	// Clear last frame
-	//this->render_objects(this->old_map, old_player.position, true);
 	erase();
 
 	move(0,0);
@@ -65,20 +63,20 @@ void Screen::racing_screen(int place, float completed_percentage, float player_s
 	//string position = "x: " + to_string(player.position.x) + ", y: " + to_string(player.position.y);
 	//addstr(position.c_str());
 
-	move(1,0);
-	//string percentage = "Completado: " + to_string(completed_percentage) + "%";
-	//addstr(percentage.c_str());
+	move(0,0);
+	string percentage = "Completed: " + to_string((int) round(player.position.y)/10) + "%";
+	addstr(percentage.c_str());
 
 	move(0,this->max_y - 19);
-	string full_speed = "Velocidade: " + to_string((int)player_speed) + "km/h";
+	string full_speed = "Speed: " + to_string((int)player_speed) + "km/h";
 	addstr(full_speed.c_str());
 
 	if (results.size() > 0) {
 		move(2,this->max_y - 19);
 		addstr("Podium:");
 		for (int i = 0; i < results.size(); ++i) {
-			move(0,this->max_y - 19);
-			string podium = to_string(i + 1) + results[i];
+			move(3 + i,this->max_y - 19);
+			string podium = to_string(i + 1) + ": " + results[i];
 			addstr(podium.c_str());
 		
 			
@@ -95,12 +93,8 @@ void Screen::waiting_screen(int number_of_players) {
 
 
 	
-	string message2 = "Quando todos os jogadores estiverem conectados, basta teclar 's'";
+	string message2 = "When all the players are ready press 's'";
 	addstr(message2.c_str());
-
-	move(2,0);
-	string message = "Há " + to_string(number_of_players) + " pessoas conectadas";
-	addstr(message.c_str());
 
 	refresh();
 
@@ -229,10 +223,6 @@ void Screen::render_objects(vector<VisualObject> map, Coordinate player_position
 		// Apply a Coordinate transformation
 		Coordinate pos = {.x =((this->max_x/2) - delta_y + 10), .y = ((this->max_y/2) + delta_x)};
 
-		
-		
-
-
 		for (int i = 0; i < model.size(); i++) {
 			string row = model[i];
 			int x = pos.x + i;
@@ -253,50 +243,3 @@ void Screen::render_objects(vector<VisualObject> map, Coordinate player_position
 	}
 	
 }
-/*
-void Screen::update(Ship ship) {
-	
-	// get the old ship position in real map
-	Coordinate ship_pos = this->old_body_list[0].get_position();
-
-
-
-	// Clear old image
-	this->apply_body_list(true, ship_pos);
-
-	// Clear vector
-	this->old_body_list.clear();
-
-	// Update reference vector
-	for (int body = 0; body < (*(this->body_list_pointer)).size(); body++) {
-		this->old_body_list.push_back(*((*(this->body_list_pointer))[body]));	
-	}
-
-	// get the ship position in real map
-	ship_pos = this->old_body_list[0].get_position();
-
-	this->apply_body_list(false, ship_pos);
-	//while(1);
-
-	// Prepare to display status
-	Coordinate ship_speed = this->old_body_list[0].get_speed();
-	string status_speed = "speed: (" + to_string(ship_speed.x) + ", " + to_string(ship_speed.y) + ")";
-	string status_pos = "position: (" + to_string(ship_pos.x) + ", " + to_string(ship_pos.y) + ")";
-
-	move(0,0);
-	addstr(status_pos.c_str());
-
-	move(1,0);
-	addstr(status_speed.c_str());
-	
-	move(2,0);
-	//addstr(this->log.c_str());
-
-
-	refresh();
-}
-
-void Screen::log_message(string message) {
-	this-> log = message;
-}
-*/

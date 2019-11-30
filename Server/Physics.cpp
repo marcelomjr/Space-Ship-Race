@@ -28,9 +28,16 @@ std::vector<Player> Physics::update(double deltaT, std::vector<Player> players, 
 		if (players[body].player_state == collided) {
 			players[body].player_state = active;
 
-			float spawn_x = (this->max_x - this->min_x) / players.size();
+			float spawn_x = (max_x - min_x) / (players.size() + 1);
 
-			players[body].position = {this->min_x + spawn_x * players[body].player_id, 0.0, 0.0};
+			
+
+
+			players[body].position;
+			players[body].position.y = 0;
+			players[body].position.z = 0;
+			players[body].position.x = min_x + spawn_x * (players[body].player_id + 1);
+
 			players[body].speed = {0.0, 0.0, 0.0};
 			
 		}

@@ -25,12 +25,6 @@ void Model::remove_player(int player_id) {
 
 		}
 	}
-	cout << "apóx excluir o " << player_id << endl;
-	for (int i = 0; i < this->players_data.size(); i++) {
-		cout << this->players_data[i].player_id << " ";
-	}
-	cout << endl;
-
 }
 
 string Model::serialize_model(int player_id, json& j) {
@@ -60,7 +54,7 @@ string Model::serialize_model(int player_id, json& j) {
 			current_player["place"] = this->players_data[i].place;
 			current_player["speed"]["x"] = round(this->players_data[i].speed.x);
 			current_player["speed"]["y"] = round(this->players_data[i].speed.y);
-			current_player["speed"]["z"] = round(this->players_data[i].speed.z);
+			//current_player["speed"]["z"] = round(this->players_data[i].speed.z);
 
 
 			was_the_player_found = true;
@@ -124,7 +118,7 @@ void Model::player_to_json( Player player, json& j_player) {
 
 	j_player["position"]["x"] = round(player.position.x);
 	j_player["position"]["y"] = round(player.position.y);
-	j_player["position"]["z"] = round(player.position.z);
+	//j_player["position"]["z"] = round(player.position.z);
 
 }
 
@@ -134,7 +128,7 @@ void Model::planet_to_json(Planet planet, json& j_planet) {
 
 	j_planet["position"]["x"] = round(planet.position.x);
 	j_planet["position"]["y"] = round(planet.position.y);
-	j_planet["position"]["z"] = round(planet.position.z);
+	//j_planet["position"]["z"] = round(planet.position.z);
 }
 
 Player Model::get_player(int player_id) {

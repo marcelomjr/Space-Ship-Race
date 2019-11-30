@@ -175,19 +175,11 @@ void ServerSocket::server_loop() {
 				*/
 				msglen = recv(this->connections_fd[connection], &in_buffer, BUFFER_SIZE, MSG_DONTWAIT);
 
-				//TODO: REMOVE
-				//<<<<<<<<<<<<<<<<<<<<<<<<<<<
-				cout << "Received: message lenght: " << msglen << ": " << in_buffer<< endl;
 
-				//TODO: Remove this
 				for (int i = 0; i < MAX_CONNECTIONS; i++) {
 					cout << "[" << this->is_free_connection[i] << "] ";
 				}
 
-				cout << endl << endl;
-				//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-				
 
 				/*	recv change errno to EAGAIN when no message is received, and it is ok, 
 					but if errno != EAGAIN, there is actual problem.
@@ -236,7 +228,7 @@ void ServerSocket::server_loop() {
 
 
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				std::this_thread::sleep_for(std::chrono::milliseconds(25));
 			}
 		}
 
